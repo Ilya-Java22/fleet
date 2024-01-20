@@ -21,4 +21,13 @@ public class Brand {
     @Column(name = "lifting_capacity")
     private int liftingCapacity;
     private int capacity;
+
+    @Override
+    public String toString() {
+        return "Марка '" + brand + '\''
+                + ", тип кузова'" + type + '\''
+                + ", литраж (л) " + tankCapacity
+                + ", грузоподъемность (тонн) " + liftingCapacity
+                + ", вместимость (чел) " + capacity;
+    }
 }

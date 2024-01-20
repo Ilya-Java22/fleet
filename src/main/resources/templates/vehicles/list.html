@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="vehicle: ${vehicles}">
-                    <td th:text="${vehicle.id}" />
+                    <td><a th:text="${vehicle.id}" th:href="@{/vehicles/{vehicleId}(vehicleId=${vehicle.id})}"></a></td>
                     <td th:text="${vehicle.releaseYear}"/>
                     <td th:text="${vehicle.mileage}"/>
                     <td th:text="${vehicle.price}"/>
