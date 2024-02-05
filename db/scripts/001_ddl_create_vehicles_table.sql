@@ -1,4 +1,4 @@
-create table vehicles
+create table if not exists vehicles
 (
     id   serial primary key,
     release_year int,

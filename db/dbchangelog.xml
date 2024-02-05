@@ -6,10 +6,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     <include file="scripts/001_ddl_create_vehicles_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/002_dml_insert_vehicles.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/003_ddl_create_brands_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/004_dml_insert_brands.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/005_ddl_alter_table_vehicles_add_brand_id_column.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/006_dml_update_vehicles.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/007_ddl_alter_table_vehicles_alter_column_brand_id_set_not_null.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/002_ddl_create_brands_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/003_ddl_alter_table_vehicles_add_brand_id_column.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/004_ddl_alter_table_vehicles_alter_column_brand_id_set_not_null.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/005_ddl_create_enterprises_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/006_ddl_create_drivers_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/007_ddl_alter_table_vehicles_add_column_enterprise_id.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/008_ddl_create_active_drivers_vehicles_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/009_ddl_create_assinging_drivers_vehicles_table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -1,0 +1,1 @@
+ALTER TABLE vehicles ADD COLUMN if not exists enterprise_id int REFERENCES enterprises(id);

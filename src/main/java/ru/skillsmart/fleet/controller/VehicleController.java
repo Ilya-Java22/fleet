@@ -1,25 +1,15 @@
 package ru.skillsmart.fleet.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import ru.skillsmart.fleet.dto.VehicleDTO;
-import ru.skillsmart.fleet.model.Brand;
 import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.service.BrandService;
-import ru.skillsmart.fleet.service.SimpleVehicleService;
 import ru.skillsmart.fleet.service.VehicleService;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 @Controller
 @RequestMapping("/vehicles")
@@ -33,7 +23,7 @@ public class VehicleController {
         this.brandService = brandService;
     }
 
-    @RequestMapping(path = "/", produces = "application/json")
+    @GetMapping(path = "/", produces = "application/json")
     public @ResponseBody List<VehicleDTO> findAll() {
         return this.vehicleService.findAllDto();
     }

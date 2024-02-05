@@ -10,7 +10,7 @@ public interface VehicleService {
     List<VehicleDTO> findAllDto();
     List<Vehicle> findAll();
     Optional<Vehicle> findById(int id);
-    Vehicle save(Vehicle vehicle);
+    Optional<Vehicle> save(Vehicle vehicle);
     boolean deleteById(int id);
     boolean update(Vehicle vehicle);
 }

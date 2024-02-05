@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.skillsmart.fleet.dto.VehicleDTO;
 import ru.skillsmart.fleet.mapper.VehicleMapper;
+import ru.skillsmart.fleet.model.Enterprise;
 import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.repository.VehicleRepository;
 
@@ -39,26 +40,23 @@ public class SimpleVehicleService implements VehicleService {
     }
 
     @Override
-    public Vehicle save(Vehicle vehicle) {
-        return vehicleRepository.save(vehicle);
+    public Optional<Vehicle> save(Vehicle vehicle) {
+        Vehicle resultVehicle = vehicleRepository.save(vehicle);
+        return resultVehicle.getId() != 0 ? Optional.of(resultVehicle) : Optional.empty();
     }
 
     @Override
     public boolean deleteById(int id) {
-        Optional<Vehicle> foundVehicle = vehicleRepository.findById(id);
-        if (foundVehicle.isEmpty()) {
-            return false;
-        }
-        vehicleRepository.delete(foundVehicle.get());
-        return true;
+        return vehicleRepository.deletebyId(id) > 0;
     }
 
     @Override
     public boolean update(Vehicle vehicle) {
-        boolean exists = vehicleRepository.existsById(vehicle.getId());
-        if (exists) {
-            vehicleRepository.save(vehicle);
-        }
-        return exists;
+        return vehicleRepository.findById(vehicle.getId())
+                .map(x -> {
+                    vehicleRepository.save(vehicle);
+                    return true;
+                })
+                .orElse(false);
     }
 }

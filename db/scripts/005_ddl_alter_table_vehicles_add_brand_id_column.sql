@@ -1,1 +1,0 @@
- ALTER TABLE vehicles ADD COLUMN brand_id int references brands(id);

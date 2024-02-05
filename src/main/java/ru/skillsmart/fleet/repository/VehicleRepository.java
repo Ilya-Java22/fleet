@@ -6,9 +6,13 @@ import org.springframework.data.repository.CrudRepository;
 import ru.skillsmart.fleet.model.Vehicle;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VehicleRepository extends CrudRepository<Vehicle, Integer> {
-    @Modifying
     @Query("from Vehicle v JOIN FETCH v.brand")
     List<Vehicle> findAll();
+
+    @Modifying
+    @Query("delete from Vehicle v where v.id = ?1")
+    int deletebyId(Integer id);
 }

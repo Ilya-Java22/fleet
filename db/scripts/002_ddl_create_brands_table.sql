@@ -1,4 +1,4 @@
-create table brands
+create table if not exists brands
 (
     id   serial primary key,
     brand varchar,

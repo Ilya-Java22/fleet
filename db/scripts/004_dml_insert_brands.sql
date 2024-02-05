@@ -1,2 +1,0 @@
-insert into brands(brand, type, tank_capacity, lifting_capacity, capacity) values('Toyota', 'пикап', 100, 1000, 7);
-insert into brands(brand, type, tank_capacity, lifting_capacity, capacity) values('BMW', 'седан', 70, 500, 5);
