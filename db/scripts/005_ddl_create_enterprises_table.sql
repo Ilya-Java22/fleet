@@ -1,6 +1,6 @@
 create table if not exists enterprises
 (
     id   serial primary key,
-    name int,
+    name varchar,
     city varchar
 );

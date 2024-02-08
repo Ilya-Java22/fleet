@@ -1,6 +1,8 @@
 package ru.skillsmart.fleet.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Fetch;
@@ -22,10 +24,12 @@ public class Enterprise {
     private String name;
     private String city;
 
+    //@JsonIgnore
     @OneToMany
     @JoinColumn(name = "enterprise_id")
     private Set<Driver> driversSet = new HashSet<>();
 
+    //@JsonIgnore
     @OneToMany(mappedBy = "enterprise", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Vehicle> vehiclesSet = new HashSet<>();
 

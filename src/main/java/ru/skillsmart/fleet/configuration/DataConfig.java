@@ -1,6 +1,6 @@
 package ru.skillsmart.fleet.configuration;
 
-import jakarta.persistence.EntityManagerFactory;
+import javax.persistence.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +43,11 @@ public class DataConfig {
         factory.setDataSource(ds);
         final Properties jpaProperties = new Properties();
         jpaProperties.setProperty("hibernate.show_sql", "true");
+        jpaProperties.setProperty("hibernate.format_sql", "true");
+//        jpaProperties.setProperty("logging.level.org.hibernate.type", "trace");
+//        jpaProperties.setProperty("hibernate.type", "trace");
+//        jpaProperties.setProperty("logging.level.org.hibernate.orm.jdbc.bind", "trace");
+//        jpaProperties.setProperty("hibernate.orm.jdbc.bind", "trace");
         factory.setJpaProperties(jpaProperties);
         return factory;
     }

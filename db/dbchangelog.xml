@@ -14,4 +14,8 @@
     <include file="scripts/007_ddl_alter_table_vehicles_add_column_enterprise_id.sql" relativeToChangelogFile="true"/>
     <include file="scripts/008_ddl_create_active_drivers_vehicles_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/009_ddl_create_assinging_drivers_vehicles_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/010_ddl_create_authorities_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/011_ddl_create_managers_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/012_ddl_create_managers_enterprises_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/013_dml_insert_managers_authorities_enterprises_table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

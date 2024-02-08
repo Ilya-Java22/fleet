@@ -1,15 +1,10 @@
 package ru.skillsmart.fleet;
 
-import jakarta.transaction.TransactionManager;
-import jakarta.transaction.Transactional;
-import org.hibernate.Hibernate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import ru.skillsmart.fleet.mapper.VehicleMapper;
 import ru.skillsmart.fleet.model.*;
 import ru.skillsmart.fleet.repository.AssingingDriversToVehiclesRepository;
 import ru.skillsmart.fleet.repository.DriverRepository;
-import ru.skillsmart.fleet.repository.EnterpriseRepository;
 import ru.skillsmart.fleet.repository.VehicleRepository;
 import ru.skillsmart.fleet.service.EnterpriseService;
 

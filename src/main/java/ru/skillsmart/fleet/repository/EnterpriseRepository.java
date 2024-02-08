@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import ru.skillsmart.fleet.model.Driver;
 import ru.skillsmart.fleet.model.Enterprise;
+import ru.skillsmart.fleet.model.Manager;
 import ru.skillsmart.fleet.model.Vehicle;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface EnterpriseRepository extends CrudRepository<Enterprise, Integer
 
     @Query("from Enterprise e LEFT JOIN FETCH e.driversSet where e.id = ?1")
     Optional<Enterprise> findByIdWithDrivers(Integer id);
+    @Query("SELECT e.id FROM Manager m JOIN m.enterprises e WHERE m.username = ?1")
+    List<Integer> findEnterpriseIdsByManagerUsername(String name);
 }

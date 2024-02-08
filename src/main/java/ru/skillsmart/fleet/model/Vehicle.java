@@ -1,6 +1,6 @@
 package ru.skillsmart.fleet.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

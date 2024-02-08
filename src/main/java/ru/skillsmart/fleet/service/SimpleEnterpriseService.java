@@ -5,21 +5,25 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillsmart.fleet.dto.EnterpriseDTO;
 import ru.skillsmart.fleet.mapper.EnterpriseMapper;
 import ru.skillsmart.fleet.model.Enterprise;
+import ru.skillsmart.fleet.model.Manager;
 import ru.skillsmart.fleet.repository.EnterpriseRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SimpleEnterpriseService implements EnterpriseService {
 
     private final EnterpriseRepository enterpriseRepository;
+    private final ManagerService managerService;
 
     private final EnterpriseMapper enterpriseMapper;
 
-    public SimpleEnterpriseService(EnterpriseRepository enterpriseRepository, EnterpriseMapper enterpriseMapper) {
+    public SimpleEnterpriseService(EnterpriseRepository enterpriseRepository, EnterpriseMapper enterpriseMapper, ManagerService managerService) {
         this.enterpriseRepository = enterpriseRepository;
         this.enterpriseMapper = enterpriseMapper;
+        this.managerService = managerService;
     }
 
     @Override
@@ -29,9 +33,17 @@ public class SimpleEnterpriseService implements EnterpriseService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<Enterprise> findAllWithVehiclesAndDrivers() {
+    public List<EnterpriseDTO> findManagerEnterprisesDto(String username) {
+        Set<Enterprise> enterprises = managerService.findManagerByName(username).getEnterprises();
+        return enterprises.stream()
+                .map(enterpriseMapper::getModelFromEntity)
+                .toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    List<Enterprise> findAllWithVehiclesAndDrivers() {
         List<Enterprise> enterprisesWithVehicles = enterpriseRepository.findAllWithVehicles();
         return !enterprisesWithVehicles.isEmpty() ? enterpriseRepository.findAllWithDrivers() : enterprisesWithVehicles;
     }
