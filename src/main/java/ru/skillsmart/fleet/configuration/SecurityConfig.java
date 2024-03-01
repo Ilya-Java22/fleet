@@ -3,17 +3,23 @@ package ru.skillsmart.fleet.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import ru.skillsmart.fleet.service.CustomUserDetailsService;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 //    @Autowired
@@ -22,16 +28,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource ds;
 
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication().dataSource(ds)
-                .usersByUsernameQuery("select username, password, 'true' "
-                        + "from managers "
-                        + "where username = ?")
-                .authoritiesByUsernameQuery(
-                        " select m.username, a.authority "
-                                + "from authorities as a, managers as m "
-                                + "where m.username = ? and m.authority_id = a.id");
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+        //auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
 
@@ -44,15 +47,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //данный вариант - "JDBC-Аутентификация со своими таблицами"
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().authorizeRequests()
+        //http.authorizeRequests()
 //                .antMatchers("/login", "/css/**", "/js/**")
 //                .permitAll()
-                .antMatchers("/enterprises/**")
-                //.hasAnyRole("ADMIN", "USER")
-                .hasAuthority("MANAGER")
-                .anyRequest()
-                //.authenticated()
-                .permitAll()
+                    .antMatchers("/api/**")
+                    //.hasAnyRole("ADMIN", "USER")
+                    .hasAnyAuthority("MANAGER", "ADMIN")
+                    .anyRequest()
+                    .authenticated()
+                    //.permitAll()
+//                .antMatchers(HttpMethod.GET).hasAnyAuthority("USER", "MANAGER")
+//                .antMatchers(HttpMethod.POST).hasAuthority("MANAGER")
+//                .antMatchers(HttpMethod.PUT).hasAuthority("MANAGER")
+//                .antMatchers(HttpMethod.DELETE).hasAuthority("MANAGER")
+                .and()
+                .exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .formLogin()
                 .loginPage("/login")
@@ -63,10 +74,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutSuccessUrl("/login?logout=true")
                 .invalidateHttpSession(true)
-                .permitAll()
-                .and()
-                .csrf()
-                .disable();
+                .permitAll();
+//                .and()
+//                .csrf()
+//                .disable();
     }
 
 }

@@ -19,7 +19,7 @@ public class Enterprise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private int id;
+    private Integer id;
 
     private String name;
     private String city;

@@ -1,5 +1,6 @@
 package ru.skillsmart.fleet.service;
 
+import ru.skillsmart.fleet.dto.VehicleCreateDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
 import ru.skillsmart.fleet.model.Vehicle;
 
@@ -11,6 +12,8 @@ public interface VehicleService {
     List<Vehicle> findAll();
     Optional<Vehicle> findById(int id);
     Optional<Vehicle> save(Vehicle vehicle);
+    Optional<VehicleDTO> saveRest(VehicleCreateDTO vehicleCreateDTO);
     boolean deleteById(int id);
     boolean update(Vehicle vehicle);
+    void moveVehicleToEnterprise(Vehicle vehicle, Integer newEnterpriseId);
 }

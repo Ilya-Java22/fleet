@@ -1,24 +1,28 @@
 package ru.skillsmart.fleet.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import ru.skillsmart.fleet.dto.VehicleCreateDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
 import ru.skillsmart.fleet.mapper.VehicleMapper;
 import ru.skillsmart.fleet.model.Enterprise;
 import ru.skillsmart.fleet.model.Vehicle;
+import ru.skillsmart.fleet.repository.EnterpriseRepository;
 import ru.skillsmart.fleet.repository.VehicleRepository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SimpleVehicleService implements VehicleService {
     private final VehicleRepository vehicleRepository;
+    private final UserService userService;
+    private final EnterpriseRepository enterpriseRepository;
     private final VehicleMapper vehicleMapper;
 
-    public SimpleVehicleService(VehicleRepository vehicleRepository, VehicleMapper vehicleMapper) {
+    public SimpleVehicleService(VehicleRepository vehicleRepository, UserService userService,
+                                EnterpriseRepository enterpriseRepository, VehicleMapper vehicleMapper) {
         this.vehicleRepository = vehicleRepository;
+        this.userService = userService;
+        this.enterpriseRepository = enterpriseRepository;
         this.vehicleMapper = vehicleMapper;
     }
 
@@ -46,6 +50,13 @@ public class SimpleVehicleService implements VehicleService {
     }
 
     @Override
+    public Optional<VehicleDTO> saveRest(VehicleCreateDTO vehicleCreateDTO) {
+        Vehicle vehicle = vehicleMapper.getEntityFromModel(vehicleCreateDTO);
+        vehicleRepository.save(vehicle);
+        return vehicle.getId() != 0 ? Optional.of(vehicleMapper.getModelFromEntity(vehicle)) : Optional.empty();
+    }
+
+    @Override
     public boolean deleteById(int id) {
         return vehicleRepository.deletebyId(id) > 0;
     }
@@ -59,4 +70,15 @@ public class SimpleVehicleService implements VehicleService {
                 })
                 .orElse(false);
     }
+
+    @Override
+    public void moveVehicleToEnterprise(Vehicle vehicle, Integer newEnterpriseId) {
+//        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+//                .orElseThrow(() -> new ResponseStatusException(
+//                        HttpStatus.NOT_FOUND, "Vehicle is not found. Please, check id."
+//                ));
+        vehicle.setEnterprise(enterpriseRepository.getReferenceById(newEnterpriseId));
+        vehicleRepository.save(vehicle);
+    }
+
 }

@@ -15,7 +15,7 @@ public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private int id;
+    private Integer id;
 
     @Column(name = "release_year")
     private int releaseYear;

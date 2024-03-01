@@ -5,25 +5,22 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillsmart.fleet.dto.EnterpriseDTO;
 import ru.skillsmart.fleet.mapper.EnterpriseMapper;
 import ru.skillsmart.fleet.model.Enterprise;
-import ru.skillsmart.fleet.model.Manager;
 import ru.skillsmart.fleet.repository.EnterpriseRepository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class SimpleEnterpriseService implements EnterpriseService {
 
     private final EnterpriseRepository enterpriseRepository;
-    private final ManagerService managerService;
+    private final UserService userService;
 
     private final EnterpriseMapper enterpriseMapper;
 
-    public SimpleEnterpriseService(EnterpriseRepository enterpriseRepository, EnterpriseMapper enterpriseMapper, ManagerService managerService) {
+    public SimpleEnterpriseService(EnterpriseRepository enterpriseRepository, EnterpriseMapper enterpriseMapper, UserService userService) {
         this.enterpriseRepository = enterpriseRepository;
         this.enterpriseMapper = enterpriseMapper;
-        this.managerService = managerService;
+        this.userService = userService;
     }
 
     @Override
@@ -34,8 +31,8 @@ public class SimpleEnterpriseService implements EnterpriseService {
     }
 
     @Override
-    public List<EnterpriseDTO> findManagerEnterprisesDto(String username) {
-        Set<Enterprise> enterprises = managerService.findManagerByName(username).getEnterprises();
+    public List<EnterpriseDTO> findUserEnterprisesWithDriversVehiclesDto(String username) {
+        Set<Enterprise> enterprises = userService.findUserWithEnterprisesWithDriversVehiclesByUsername(username).getEnterprises();
         return enterprises.stream()
                 .map(enterpriseMapper::getModelFromEntity)
                 .toList();
@@ -50,9 +47,11 @@ public class SimpleEnterpriseService implements EnterpriseService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Enterprise> findById(int id) {
+    public Optional<EnterpriseDTO> findById(int id) {
         Optional<Enterprise> enterpriseWithVehicles = enterpriseRepository.findByIdWithVehicles(id);
-        return enterpriseWithVehicles.isPresent() ? enterpriseRepository.findByIdWithDrivers(id) : Optional.empty();
+        return enterpriseWithVehicles.isPresent()
+                ? enterpriseRepository.findByIdWithDrivers(id)
+                .map(enterpriseMapper::getModelFromEntity) : Optional.empty();
     }
 
     @Override
@@ -69,5 +68,13 @@ public class SimpleEnterpriseService implements EnterpriseService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    public boolean checkUserAccessToEnterprise(String username, Integer... enterpriseIds) {
+        Set<Enterprise> userEnterprisesSet = userService.findUserWithEnterprisesByUsername(username).getEnterprises();
+        Set<Integer> enterpriseIdSet = new HashSet<>(Arrays.asList(enterpriseIds));
+        return userEnterprisesSet.stream()
+                .map(Enterprise::getId)
+                .anyMatch(enterpriseIdSet::contains);
     }
 }

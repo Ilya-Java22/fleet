@@ -1,5 +1,6 @@
 package ru.skillsmart.fleet.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,7 +12,7 @@ import ru.skillsmart.fleet.model.Vehicle;
 import java.util.List;
 import java.util.Optional;
 
-public interface EnterpriseRepository extends CrudRepository<Enterprise, Integer> {
+public interface EnterpriseRepository extends JpaRepository<Enterprise, Integer> {
 
     @Query("from Enterprise e LEFT JOIN FETCH e.vehiclesSet")
     List<Enterprise> findAllWithVehicles();

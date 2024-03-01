@@ -1,23 +1,19 @@
 package ru.skillsmart.fleet.model;
 
-import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import javax.persistence.*;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "drivers")
-public class Driver {
+@Table(name = "authorities")
+public class Authority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Integer id;
 
     private String name;
-    private double salary;
-
-//    @OneToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "active_vehicle_id")
-//    private Vehicle activeVehicle;
 }

@@ -8,7 +8,7 @@ import ru.skillsmart.fleet.service.SimpleBrandService;
 import ru.skillsmart.fleet.service.SimpleVehicleService;
 
 @Controller
-@RequestMapping("/brands")
+@RequestMapping("/brand")
 public class BrandController {
 
     private final SimpleBrandService brandService;

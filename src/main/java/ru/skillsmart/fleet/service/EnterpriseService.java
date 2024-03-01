@@ -11,8 +11,9 @@ import java.util.Optional;
 
 public interface EnterpriseService {
     List<EnterpriseDTO> findAllDto();
-    List<EnterpriseDTO> findManagerEnterprisesDto(String username);
-    Optional<Enterprise> findById(int id);
+    List<EnterpriseDTO> findUserEnterprisesWithDriversVehiclesDto(String username);
+    Optional<EnterpriseDTO> findById(int id);
     Optional<Enterprise> save(Enterprise enterprise);
     boolean update(Enterprise enterprise);
+    boolean checkUserAccessToEnterprise(String username, Integer... enterpriseIds);
 }
