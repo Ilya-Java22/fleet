@@ -4,7 +4,9 @@ import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -30,8 +32,8 @@ public class Vehicle {
     @JoinColumn(name = "enterprise_id")
     private Enterprise enterprise;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<AssingingDriversToVehicles> assingingDriversToVehicles = new HashSet<>();
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AssingingDriversToVehicles> assingingDriversToVehicles = new ArrayList<>();
 
 //    @PreRemove
 //    public void remove() {
@@ -41,6 +43,8 @@ public class Vehicle {
 //        });
 //    }
 
+    //а верно ли remove? - что удалит: запись в третьей таблице или водителя?
+    //all - видимо, хочет сохр driver в drivers, но там уже есть, значит, удалит из drivers
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinTable(name = "active_drivers_vehicles",
             joinColumns =

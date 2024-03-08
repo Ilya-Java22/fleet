@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillsmart.fleet.dto.EnterpriseDTO;
 import ru.skillsmart.fleet.mapper.EnterpriseMapper;
+import ru.skillsmart.fleet.model.Brand;
 import ru.skillsmart.fleet.model.Enterprise;
 import ru.skillsmart.fleet.repository.EnterpriseRepository;
 
@@ -76,5 +77,18 @@ public class SimpleEnterpriseService implements EnterpriseService {
         return userEnterprisesSet.stream()
                 .map(Enterprise::getId)
                 .anyMatch(enterpriseIdSet::contains);
+    }
+
+    @Override
+    public List<Enterprise> findAllById(String[] names) {
+        List<Integer> enterpriseIds = Arrays.stream(names)
+                .map(Integer::valueOf)
+                .distinct().toList();
+        return enterpriseRepository.findAllById(enterpriseIds);
+    }
+
+    @Override
+    public Enterprise getReferenceById(int id) {
+        return enterpriseRepository.getReferenceById(id);
     }
 }

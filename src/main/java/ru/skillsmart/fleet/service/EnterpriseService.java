@@ -1,7 +1,9 @@
 package ru.skillsmart.fleet.service;
 
+import net.bytebuddy.asm.Advice;
 import ru.skillsmart.fleet.dto.EnterpriseDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
+import ru.skillsmart.fleet.model.Brand;
 import ru.skillsmart.fleet.model.Enterprise;
 import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.repository.EnterpriseRepository;
@@ -16,4 +18,7 @@ public interface EnterpriseService {
     Optional<Enterprise> save(Enterprise enterprise);
     boolean update(Enterprise enterprise);
     boolean checkUserAccessToEnterprise(String username, Integer... enterpriseIds);
+    List<Enterprise> findAllById(String[] names);
+    Enterprise getReferenceById(int id);
+
 }

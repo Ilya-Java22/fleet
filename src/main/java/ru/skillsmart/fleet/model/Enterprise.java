@@ -24,9 +24,9 @@ public class Enterprise {
     private String name;
     private String city;
 
-    //@JsonIgnore
-    @OneToMany
-    @JoinColumn(name = "enterprise_id")
+//    @JoinColumn(name = "enterprise_id") если бы была односторонняя связь (в Driver нет поля Е, но есть столбец,
+//    этого бы плюс просто @OneToMany хватило, но делаю двустороннюю, так как сохраняю машину с предприятием, а не наоборот (см. генерацию данных)
+    @OneToMany(mappedBy = "enterprise", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Driver> driversSet = new HashSet<>();
 
     //@JsonIgnore

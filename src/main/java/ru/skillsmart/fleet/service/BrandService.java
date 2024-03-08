@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface BrandService {
     List<Brand> findAll();
     Optional<Brand> findById(int id);
+    Brand getReferenceById(int id);
 }

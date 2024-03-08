@@ -24,4 +24,9 @@ public class SimpleBrandService implements BrandService {
     public Optional<Brand> findById(int id) {
         return brandRepository.findById(id);
     }
+
+    @Override
+    public Brand getReferenceById(int id) {
+        return brandRepository.getReferenceById(id);
+    }
 }

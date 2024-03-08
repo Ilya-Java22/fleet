@@ -2,7 +2,6 @@ package ru.skillsmart.fleet.repository;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.skillsmart.fleet.model.Manager;
 import ru.skillsmart.fleet.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {

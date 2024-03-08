@@ -17,6 +17,10 @@ public class Driver {
     private String name;
     private double salary;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "enterprise_id")
+    private Enterprise enterprise;
+
 //    @OneToOne(fetch = FetchType.LAZY, optional = false)
 //    @JoinColumn(name = "active_vehicle_id")
 //    private Vehicle activeVehicle;
