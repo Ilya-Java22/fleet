@@ -66,7 +66,8 @@ public class FleetApplication {
 //		a7.setDriver(driver4);
 //		a7.setVehicle(vehicle7);
 //		assingingDriversToVehiclesRepository.saveAll(List.of(a1, a2, a3, a4, a5, a6, a7));
-		Vehicle vehicle1 = vehicleRepository.findById(1).get();
 		//vehicleRepository.delete(vehicle1);
+
+		//Vehicle vehicle1 = vehicleRepository.findById(1).get();
 	}
 }

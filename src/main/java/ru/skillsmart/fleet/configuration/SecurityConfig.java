@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import ru.skillsmart.fleet.service.CustomAuthenticationSuccessHandler;
 import ru.skillsmart.fleet.service.CustomUserDetailsService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -50,8 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().authorizeRequests()
         //http.authorizeRequests()
-//                .antMatchers("/login", "/css/**", "/js/**")
-//                .permitAll()
+                    .antMatchers("/css/**", "/js/**")
+                    .permitAll()
                     .antMatchers("/api/**")
                     //.hasAnyRole("ADMIN", "USER")
                     .hasAnyAuthority("MANAGER", "ADMIN")
@@ -67,7 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/")
+//                .defaultSuccessUrl("/")
+                .successHandler(customAuthenticationSuccessHandler)
                 .failureUrl("/login?error=true")
                 .permitAll()
                 .and()

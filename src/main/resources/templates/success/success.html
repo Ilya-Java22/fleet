@@ -9,14 +9,14 @@
     <script th:src="@{/js/code.jquery.com_jquery-3.7.0.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
 
-    <title>Ошибка</title>
+    <title>успешно</title>
 </head>
 <body>
 <div class="container-fluid p-0">
     <header th:insert="~{blocks/header :: header}"></header>
     <div class="container">
-        <h3 class="mt-3">Произошла ошибка</h3>
-        <p class = "text-danger" style="font-size: 20px; margin-bottom: 14px;" th:text="${message}"></p>
+        <h3 class="mt-3">Выполнено</h3>
+        <p style="font-size: 20px; margin-bottom: 14px;" th:text="${message}"></p>
         <!-- Кнопка перехода к предприятиям -->
         <a th:href="@{/enterprise/}" class="btn btn-primary mb-2">Вернуться к предприятиям</a>
     </div>

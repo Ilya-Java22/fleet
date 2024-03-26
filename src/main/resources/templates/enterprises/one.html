@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <!--  Зависимости Bootstrap-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/code.jquery.com_jquery-3.7.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <title>Управление парком</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+    <header th:insert="~{blocks/header :: header}"></header>
+    <div class="container mt-2">
+        <h3>Управление парком для [[${enterpriseName}]]</h3>
+
+        <div class="mb-3 mt-3">
+            <p><b>1. Зарегистрировать машину</b></p>
+            <a style="padding-left: 20px;" th:href="@{/vehicle/create/?enterpriseId={enterpriseId}(enterpriseId=${enterpriseId}, enterpriseName=${enterpriseName})}">регистрация</a>
+        </div>
+        <div class="mb-3">
+            <p><b>2. Изменить информацию о машине</b></p>
+            <p style="padding-left: 20px;"><i>для обновления информации о машине, введите её id</i></p>
+            <div style="padding-left: 20px; margin-bottom: 14px;" >
+                <input type="number" class="form-control" id="vehicleId" name="vehicleId" style="width: 150px;" placeholder="id автомобиля" >
+            </div>
+<!--            <a id="vehicleLink" style="padding-left: 20px;" th:href="@{/vehicle/{id}/?enterpriseId={enterpriseId}}">изменить информацию о машине</a>-->
+<!--            исходно такую штуку написал, но рабит и проще из-за скрипта-->
+<!--            <a id="vehicleLink" style="padding-left: 20px;" th:href="@{/vehicle/{id}/?enterpriseId={enterpriseId}(id=${vehicleId}, enterpriseId=${enterpriseId})}">изменить информацию о машине</a>-->
+<!--            для корректного возврата всё-таки пришлось и enterpriseName пихать-->
+            <a id="vehicleLink" style="padding-left: 20px;" th:href="@{/vehicle/{id}/?enterpriseId={enterpriseId}&enterpriseName={enterpriseName}}">изменить информацию о машине</a>-->
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var vehicleIdInput = document.getElementById('vehicleId');
+                var enterpriseId = /*[[${enterpriseId}]]*/ '';
+                var enterpriseName = /*[[${enterpriseName}]]*/ '';
+                var vehicleLink = document.getElementById('vehicleLink');
+
+                vehicleLink.addEventListener('click', function(event) {
+                    if (vehicleIdInput.value === '') {
+                        event.preventDefault(); // Отменить действие по умолчанию при отсутствии значения
+                        alert('Пожалуйста, введите номер машины');
+                    } else {
+                        var id = vehicleIdInput.value;
+                        vehicleLink.href = '/vehicle/' + id + '/?enterpriseId=' + enterpriseId + '&enterpriseName=' + enterpriseName;
+                    }
+                });
+                /*]]>*/
+            </script>
+
+            <!--            скрипт без контроля пустого поля, оно приведет к ошибке-->
+            <!--            <script th:inline="javascript">-->
+            <!--                /*<![CDATA[*/-->
+            <!--                var vehicleIdInput = document.getElementById('vehicleId');-->
+            <!--                var enterpriseId = /*[[${enterpriseId}]]*/ '';-->
+            <!--                var enterpriseName = /*[[${enterpriseName}]]*/ '';-->
+            <!--                var vehicleLink = document.getElementById('vehicleLink');-->
+
+            <!--                vehicleIdInput.addEventListener('input', function() {-->
+            <!--                    //var id = vehicleIdInput.value;-->
+            <!--                    var id = vehicleIdInput.value.trim() !== '' ? vehicleIdInput.value : 'null';-->
+            <!--                    vehicleLink.href = '/vehicle/' + id + '/?enterpriseId=' + enterpriseId + '&enterpriseName=' + enterpriseName;-->
+            <!--                });-->
+            <!--                /*]]>*/-->
+            <!--            </script>-->
+
+
+<!--            в случае более простой ссылки, скрипт попроще (но не забудь тогда в соотв методе VehicleController удалить из параметров @RequestParam("enterpriseId") int enterpriseId-->
+<!--            <a id="vehicleLink" style="padding-left: 20px;" th:href="@{/vehicle/{id}(id=${vehicleId})}">изменить информацию о машине</a>-->
+<!--            <script>-->
+<!--                // Находим элементы по id-->
+<!--                var vehicleIdInput = document.getElementById('vehicleId');-->
+<!--                var vehicleLink = document.getElementById('vehicleLink');-->
+
+<!--                // Добавляем обработчик события на изменение значения в input-->
+<!--                vehicleIdInput.addEventListener('input', function() {-->
+<!--                    // Обновляем href ссылки, подставляя значение из input-->
+<!--                    vehicleLink.href = '/vehicle/' + vehicleIdInput.value;-->
+<!--                });-->
+<!--            </script>-->
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

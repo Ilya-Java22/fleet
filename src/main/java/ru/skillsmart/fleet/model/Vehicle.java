@@ -3,6 +3,8 @@ package ru.skillsmart.fleet.model;
 import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,9 +45,10 @@ public class Vehicle {
 //        });
 //    }
 
-    //а верно ли remove? - что удалит: запись в третьей таблице или водителя?
+
     //all - видимо, хочет сохр driver в drivers, но там уже есть, значит, удалит из drivers
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    //односторонняя связь - всё просто, удаляем vehicle, active спокойно удаляется, с assinging такое не проходит
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "active_drivers_vehicles",
             joinColumns =
                     { @JoinColumn(name = "vehicle_id", referencedColumnName = "id") },

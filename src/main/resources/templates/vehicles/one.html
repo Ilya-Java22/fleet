@@ -15,12 +15,26 @@
 <div class="container-fluid p-0">
     <header th:insert="~{blocks/header :: header}"></header>
     <div class="container">
-        <form class="mt-3" th:action="@{/vehicles/update}" method="post" th:object="${vehicle}" enctype="multipart/form-data">
+        <form class="mt-3" th:action="@{/vehicle/update}" method="post" th:object="${vehicle}" enctype="multipart/form-data">
                 <input type="hidden" name="id" th:field="*{id}">
+                <input type="hidden" name="driversCount" th:value="${drivers.size()}">
+
             <div class="mb-3">
-                <label for="brand.id"><b>Модель</b></label>
-                <select class="form-control" id="brand.id" name="brand.id">
-                    <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand}" th:field="*{brand.id}" th:selected="${brand.id==brand.id}"></option>
+                <label for="brand"><b>Марка</b></label>
+                <select class="form-control" id="brand" name="brandId">
+                    <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand}" th:field="*{brandId}" th:selected="${brand.id==brandId}"></option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="enterprise"><b>Предприятие</b></label>
+                <select class="form-control" id="enterprise" name="enterpriseId">
+                    <option th:each="enterprise : ${enterprises}" th:value="${enterprise.id}" th:text="${enterprise.name}" th:field="*{enterpriseId}" th:selected="${enterprise.id==enterpriseId}"></option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="drivers"><b>Активный водитель</b></label>
+                <select class="form-control" id="drivers" name="activeDriverId">
+                    <option th:each="driver : ${drivers}" th:value="${driver.id}" th:text="${driver.name}" th:field="*{activeDriverId}" th:selected="${driver.id==activeDriverId}"></option>
                 </select>
             </div>
             <div class="mb-3">
@@ -39,8 +53,8 @@
                 <div class="col-6"></div>
                 <div class="col-6">
                     <div class="row">
-                        <div class="col-4"><a class="btn btn-light w-100" th:href="@{/vehicles}">Отмена</a></div>
-                        <div class="col-4"><a class="btn btn-danger w-100" th:href="@{/vehicles/delete/{id}(id=${vehicle.id})}">Удалить</a></div>
+                        <div class="col-4"><a class="btn btn-light w-100" th:href="@{/enterprise/{enterpriseId}/?enterpriseName={enterpriseName}(enterpriseId=${enterpriseId}, enterpriseName=${enterpriseName})}">Отмена</a></div>
+                        <div class="col-4"><a class="btn btn-danger w-100" th:href="@{/vehicle/delete/{id}(id=${vehicle.id})}">Удалить</a></div>
                         <div class="col-4"><button class="btn btn-success w-100" type="submit">Обновить</button></div>
                     </div>
                 </div>

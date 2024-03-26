@@ -25,6 +25,12 @@ public class SimpleEnterpriseService implements EnterpriseService {
     }
 
     @Override
+    public List<Enterprise> findUserEnterprises(String username) {
+        Set<Enterprise> enterprises = userService.findUserWithEnterprisesByUsername(username).getEnterprises();
+        return new ArrayList<>(enterprises);
+    }
+
+    @Override
     public List<EnterpriseDTO> findAllDto() {
         return findAllWithVehiclesAndDrivers().stream()
                 .map(enterpriseMapper::getModelFromEntity)
@@ -33,10 +39,15 @@ public class SimpleEnterpriseService implements EnterpriseService {
 
     @Override
     public List<EnterpriseDTO> findUserEnterprisesWithDriversVehiclesDto(String username) {
-        Set<Enterprise> enterprises = userService.findUserWithEnterprisesWithDriversVehiclesByUsername(username).getEnterprises();
+        List<Enterprise> enterprises = findUserEnterprisesWithDriversVehicles(username);
         return enterprises.stream()
                 .map(enterpriseMapper::getModelFromEntity)
                 .toList();
+    }
+
+    @Override
+    public List<Enterprise> findUserEnterprisesWithDriversVehicles(String username) {
+        return new ArrayList<>(userService.findUserWithEnterprisesWithDriversVehiclesByUsername(username).getEnterprises());
     }
 
 
@@ -77,11 +88,12 @@ public class SimpleEnterpriseService implements EnterpriseService {
         return userEnterprisesSet.stream()
                 .map(Enterprise::getId)
                 .anyMatch(enterpriseIdSet::contains);
+        // ИЛИ ALLMATCH!!!!!?????
     }
 
     @Override
-    public List<Enterprise> findAllById(String[] names) {
-        List<Integer> enterpriseIds = Arrays.stream(names)
+    public List<Enterprise> findAllById(String[] ids) {
+        List<Integer> enterpriseIds = Arrays.stream(ids)
                 .map(Integer::valueOf)
                 .distinct().toList();
         return enterpriseRepository.findAllById(enterpriseIds);

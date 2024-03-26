@@ -68,7 +68,7 @@ public class SimpleDataGenerationService implements DataGenerationService {
 
             vehicle.setAssingingDriversToVehicles(listOfAssingingDriversToVehicles);
 
-            if (i % 3 == 0) {
+            if (i % 10 == 0) {
                 vehicle.setActiveDriver(listOfAssingingDriversToVehicles
                         .get(ThreadLocalRandom.current().nextInt(listOfAssingingDriversToVehicles.size()))
                         .getDriver());
@@ -88,11 +88,11 @@ public class SimpleDataGenerationService implements DataGenerationService {
     }
 
     private int getRandomVehicleNumber(int numberOfVehicles) {
-        return ThreadLocalRandom.current().nextInt(numberOfVehicles + 1);
+        return ThreadLocalRandom.current().nextInt(3000, numberOfVehicles + 1);
     }
 
     private int getRandomDriverNumber(int numberOfDrivers) {
-        return ThreadLocalRandom.current().nextInt(numberOfDrivers + 1);
+        return ThreadLocalRandom.current().nextInt(1, numberOfDrivers + 1);
     }
 
     private double getRandomPrice() {

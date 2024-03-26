@@ -13,6 +13,7 @@ public class EnterpriseDTO {
     private int id;
     private String name;
     private String city;
+    //при небольшом размере коллекций ок, при больших - скорее всего надо убрать
     private Set<Integer> driversIdSet;
     private Set<Integer> vehiclesIdSet;
 }

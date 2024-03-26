@@ -1,5 +1,7 @@
 package ru.skillsmart.fleet.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,17 +12,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.skillsmart.fleet.dto.VehicleCreateDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
+import ru.skillsmart.fleet.mapper.EnterpriseMapper;
+import ru.skillsmart.fleet.mapper.VehicleMapper;
 import ru.skillsmart.fleet.model.Vehicle;
-import ru.skillsmart.fleet.service.BrandService;
-import ru.skillsmart.fleet.service.EnterpriseService;
-import ru.skillsmart.fleet.service.UserService;
-import ru.skillsmart.fleet.service.VehicleService;
+import ru.skillsmart.fleet.service.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.security.Principal;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 //@RequestMapping("/vehicle")
 @Controller
@@ -30,42 +31,69 @@ public class VehicleController {
     private final BrandService brandService;
     private final EnterpriseService enterpriseService;
 
-    public VehicleController(VehicleService vehicleService, BrandService brandService, UserService userService, EnterpriseService enterpriseService) {
+    private final DriverService driverService;
+
+    public VehicleController(VehicleService vehicleService, BrandService brandService, UserService userService, EnterpriseService enterpriseService, EnterpriseMapper enterpriseMapper, VehicleMapper vehicleMapper, DriverService driverService) {
         this.vehicleService = vehicleService;
         this.brandService = brandService;
         this.enterpriseService = enterpriseService;
+        this.driverService = driverService;
     }
+
+//    заменил на пагинацю, см. ниже
+//    @GetMapping(path = "/api/vehicle/", produces = "application/json")
+//    public @ResponseBody List<VehicleDTO> findAll() {
+//        return this.vehicleService.findAllDto();
+//    }
 
     @GetMapping(path = "/api/vehicle/", produces = "application/json")
-    public @ResponseBody List<VehicleDTO> findAll() {
-        return this.vehicleService.findAllDto();
+    public @ResponseBody Page<VehicleDTO> findAll(
+            @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "20") @Min(1) @Max(100) Integer limit
+    ) {
+        return this.vehicleService.findAllDto(PageRequest.of(offset, limit));
     }
 
-    @GetMapping(path = "/vehicle")
-    public String getAll(Model model) {
-        List<Vehicle> vehicleList = vehicleService.findAll();
-        vehicleList.sort(Comparator.comparing(Vehicle::getId));
-        model.addAttribute("vehicles", vehicleList);
-        return "vehicles/list";
-    }
+    // убрал, это старый метод, когда кол-ва машин немного
+//    @GetMapping(path = "/vehicle")
+//    public String getAll(Model model) {
+//        List<Vehicle> vehicleList = vehicleService.findAll();
+//        vehicleList.sort(Comparator.comparing(Vehicle::getId));
+//        model.addAttribute("vehicles", vehicleList);
+//        return "vehicles/list";
+//    }
 
 
     @GetMapping("/vehicle/{id}")
-    public String getById(Model model, @PathVariable int id) {
-        var vehicleOptional = vehicleService.findById(id);
-        if (vehicleOptional.isEmpty()) {
-            model.addAttribute("message", "Машина с указанным идентификатором не найдена");
+    public String getById(Model model, @PathVariable int id, @RequestParam("enterpriseId") int enterpriseId,
+                          @RequestParam("enterpriseName") String enterpriseName, Principal principal) {
+        //getReffered?
+        var vehicleDTOOptional = vehicleService.findVehicleDTOById(id);
+        if (vehicleDTOOptional.isEmpty()) {
+            model.addAttribute("message", "Машина с указанным идентификатором не найдена в базе");
             return "errors/404";
         }
+        var vehicleDTO = vehicleDTOOptional.get();
+        if (vehicleDTO.getEnterpriseId() != enterpriseId) {
+            model.addAttribute("message", "Машина с указанным идентификатором не закреплена за данным предприятием");
+            return "errors/404";
+        }
+        model.addAttribute("enterpriseId", enterpriseId);
+        model.addAttribute("enterpriseName", enterpriseName);
+        model.addAttribute("enterprises", enterpriseService.findUserEnterprises(principal.getName()));
         model.addAttribute("brands", brandService.findAll());
-        model.addAttribute("vehicle", vehicleOptional.get());
+        model.addAttribute("drivers", driverService.findAllByVehicle(vehicleDTO));
+//        model.addAttribute("drivers", driverService.findAllByEnterpriseId(enterpriseId));
+        model.addAttribute("vehicle", vehicleDTO);
         return "vehicles/one";
     }
 
 
     @GetMapping("/vehicle/create")
-    public String getCreationPage(Model model) {
+    public String getCreationPage(Model model, @RequestParam("enterpriseId") int enterpriseId, @RequestParam("enterpriseName") String enterpriseName) {
         model.addAttribute("brands", brandService.findAll());
+        model.addAttribute("enterpriseId", enterpriseId);
+        model.addAttribute("enterpriseName", enterpriseName);
         return "vehicles/create";
     }
 
@@ -76,17 +104,21 @@ public class VehicleController {
         if (!enterpriseService.checkUserAccessToEnterprise(principal.getName(), vehicleCreateDTO.getEnterpriseId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        return vehicleService.saveRest(vehicleCreateDTO)
+        return vehicleService.saveDTO(vehicleCreateDTO)
                 .map(x -> new ResponseEntity<>(x, HttpStatus.CREATED))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 
     @PostMapping("/vehicle/create")
-    public String create(@ModelAttribute Vehicle vehicle, @RequestParam("brand.id") int brandId, Model model) {
+    public String create(@ModelAttribute VehicleCreateDTO vehicleCreateDTO, Model model) {
         try {
-            vehicle.setBrand(brandService.findById(brandId).get());
-            vehicleService.save(vehicle);
-            return "redirect:/vehicle";
+            Optional<VehicleDTO> savedVehicle = vehicleService.saveDTO(vehicleCreateDTO);
+            if (savedVehicle.isEmpty()) {
+                model.addAttribute("message", "Машина не зарегистрирована");
+                return "errors/404";
+            }
+            model.addAttribute("message", "Машина зарегистрирована!");
+            return "success/success";
         } catch (Exception exception) {
             model.addAttribute("message", exception.getMessage());
             return "errors/404";
@@ -94,14 +126,23 @@ public class VehicleController {
     }
 
     @PostMapping("/vehicle/update")
-    public String update(@ModelAttribute Vehicle vehicle, @RequestParam("brand.id") int brandId, Model model) {
+    public String update(@ModelAttribute VehicleDTO vehicleDTO, Model model, @RequestParam("driversCount") int driversCount) {
         try {
-            var isUpdated = vehicleService.update(vehicle);
-            if (!isUpdated) {
+            var status = vehicleService.update(vehicleDTO, driversCount);
+            if (status == -2) {
                 model.addAttribute("message", "Машина с указанным идентификатором не найдена");
                 return "errors/404";
             }
-            return "redirect:/vehicle";
+            if (status == -3) {
+                model.addAttribute("message", "Перемещение машины не возможно: есть назначенные водители");
+                return "errors/404";
+            }
+            if (status == -1) {
+                model.addAttribute("message", "Данные по машине обновлены!");
+                return "success/success";
+            }
+            model.addAttribute("message", String.format("Выбранный Вами активный водитель уже назначен машине с id = %d", status));
+            return "errors/404";
         } catch (Exception exception) {
             model.addAttribute("message", exception.getMessage());
             return "errors/404";
@@ -115,6 +156,7 @@ public class VehicleController {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Vehicle is not found. Please, check id."
                 ));
+        //забыл почему мы тут беспроблемно вытаскиваем ленивый enterprise))
         if (!enterpriseService.checkUserAccessToEnterprise(userDetails.getUsername(), vehicle.getEnterprise().getId(), newEnterpriseId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access to Enterprise Denied");
         }
@@ -126,13 +168,27 @@ public class VehicleController {
         //return ResponseEntity.status(HttpStatus.CONFLICT).body("Failed to save Vehicle");
     }
 
+    //удаляет вместе с назначениями и активным водителем
     @GetMapping("/vehicle/delete/{id}")
     public String delete(Model model, @PathVariable int id) {
-        var isDeleted = vehicleService.deleteById(id);
-        if (!isDeleted) {
+        Optional<Vehicle> v = vehicleService.findById(id);
+        if (v.isEmpty()) {
             model.addAttribute("message", "Машина с указанным идентификатором не найдена");
             return "errors/404";
         }
-        return "redirect:/vehicle";
+        var isDeleted = vehicleService.deleteByVehicle(v.get());
+        if (isDeleted) {
+            model.addAttribute("message", "Машина удалена!");
+            return "success/success";
+        }
+            model.addAttribute("message", "Машина найдена, но не удалена");
+            return "errors/404";
+        //var isDeleted = vehicleService.deleteById(id);
+//        if (!isDeleted) {
+//            model.addAttribute("message", "Машина с указанным идентификатором не найдена");
+//            return "errors/404";
+//        }
+//        model.addAttribute("message", "Машина удалена!");
+//        return "success/success";
     }
 }

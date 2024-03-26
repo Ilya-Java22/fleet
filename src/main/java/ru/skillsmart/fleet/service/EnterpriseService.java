@@ -12,13 +12,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EnterpriseService {
+    List<Enterprise> findUserEnterprises(String username);
     List<EnterpriseDTO> findAllDto();
     List<EnterpriseDTO> findUserEnterprisesWithDriversVehiclesDto(String username);
+    List<Enterprise> findUserEnterprisesWithDriversVehicles(String username);
     Optional<EnterpriseDTO> findById(int id);
     Optional<Enterprise> save(Enterprise enterprise);
     boolean update(Enterprise enterprise);
     boolean checkUserAccessToEnterprise(String username, Integer... enterpriseIds);
-    List<Enterprise> findAllById(String[] names);
+    List<Enterprise> findAllById(String[] ids);
     Enterprise getReferenceById(int id);
 
 }

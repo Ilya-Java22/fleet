@@ -11,6 +11,7 @@ import ru.skillsmart.fleet.model.Vehicle;
 
 @Mapper(componentModel = "spring")
 public interface EnterpriseMapper {
+        //при небольшом размере коллекций ок, при больших - скорее всего надо убрать
         @Mapping(target = "driversIdSet", source = "driversSet", qualifiedByName = "driverToId")
         @Mapping(target = "vehiclesIdSet", source = "vehiclesSet", qualifiedByName = "vehicleToId")
         EnterpriseDTO getModelFromEntity(Enterprise enterprise);

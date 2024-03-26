@@ -18,3 +18,13 @@
 1709404633058:generate-data --enterprises-id 1,2 --number-of-vehicles 7 --number-of-drivers 5
 1709437451917:--delete from active_drivers_vehicles where id > 2;
 1709437461982:generate-data --enterprises-id 1,2 --number-of-vehicles 7 --number-of-drivers 5
+1709906016276:generate-data --enterprises-id 1,2,3 --number-of-vehicles 5000 --number-of-drivers 5000
+1709924226707:Exception: java.lang.OutOfMemoryError thrown from the UncaughtExceptionHandler in thread "Catalina-utility-1"
+1709924226757:Exception: java.lang.OutOfMemoryError thrown from the UncaughtExceptionHandler in thread "Catalina-utility-2"
+1709924226766:Exception in thread "http-nio-8080-Poller" java.lang.OutOfMemoryError: Java heap space
+1709924226776:2024-03-08 22:15:11.664  INFO 10556 --- [           main] ConditionEvaluationReportLoggingListener :
+1709924226787:Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+1709924226793:Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+1709924226801:2024-03-09 01:54:46.380  INFO 10556 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+1709924226807:Process finished with exit code 130
+1709924897483:generate-data --enterprises-id 1,2,3 --number-of-vehicles 3500 --number-of-drivers 2
