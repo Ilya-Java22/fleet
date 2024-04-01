@@ -16,7 +16,7 @@ public interface DriverRepository extends JpaRepository<Driver, Integer> {
 
     List<Driver> findAllByEnterpriseId(int enterpriseId);
 
-    @Query("select a.driver from AssingingDriversToVehicles a where a.vehicle = ?1")
-    List<Driver> findAllByVehicle(Vehicle vehicle);
+    @Query("select a.driver from AssingingDriversToVehicles a where a.vehicle.id = ?1")
+    List<Driver> findAllByVehicleId(int id);
 
 }

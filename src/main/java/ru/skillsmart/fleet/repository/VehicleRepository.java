@@ -25,7 +25,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 //    @EntityGraph(attributePaths = {"assingingDriversToVehicles", "activeDriver"})
 //    Optional<Vehicle> findVehicleById(int id);
 
-    @Query(value = "from Vehicle v JOIN FETCH v.brand",
+    //enterprise потому что надо вытаскивать их таймзону при преобразованиях времени для выдачи по ресту
+    @Query(value = "from Vehicle v JOIN FETCH v.brand JOIN FETCH v.enterprise",
             countQuery = "select count(v) from Vehicle v")
     Page<Vehicle> findAll(Pageable pageable);
 

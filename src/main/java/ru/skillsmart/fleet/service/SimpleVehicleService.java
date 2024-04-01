@@ -6,10 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillsmart.fleet.dto.VehicleCreateDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
+import ru.skillsmart.fleet.dto.VehicleDTOWithZonedDateTime;
+import ru.skillsmart.fleet.dto.VehicleUpdateDTO;
 import ru.skillsmart.fleet.mapper.VehicleMapper;
 import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.repository.EnterpriseRepository;
 import ru.skillsmart.fleet.repository.VehicleRepository;
+import ru.skillsmart.fleet.utility.TimeZoneUtility;
 
 import java.util.*;
 
@@ -39,6 +42,7 @@ public class SimpleVehicleService implements VehicleService {
     @Override
     public Page<VehicleDTO> findAllDto(Pageable pageable) {
         return vehicleRepository.findAll(pageable)
+                .map(TimeZoneUtility::setEnterpriseTimeZoneForVehicle)
                 .map(vehicleMapper::getModelFromEntity);
     }
 
@@ -53,10 +57,11 @@ public class SimpleVehicleService implements VehicleService {
     }
 
     @Override
-    public Optional<VehicleDTO> findVehicleDTOById(int id) {
+    public Optional<VehicleDTOWithZonedDateTime> findVehicleDTOWithZonedDateTimeById(int id) {
         Optional<Vehicle> vehicle = findById(id);
         return vehicle.isPresent()
-                ? vehicle.map(vehicleMapper::getModelFromEntity) : Optional.empty();
+                ? vehicle.map(vehicleMapper::getModelWithDefaultZonedDateTimeFromEntity)
+                .map(TimeZoneUtility::setEnterpriseTZForVehicleDTOWithZonedDateTime) : Optional.empty();
     }
 
     //не нужен, излишне
@@ -108,17 +113,18 @@ public class SimpleVehicleService implements VehicleService {
     //возвращает -2, если обновляемая машина не найдена в базе; -1 если успешно обновлено; а если выбранный в качестве
     // активного водитель уже является активным у какой-то машины, то возвращает id этой машины
     @Override
-    public Integer update(VehicleDTO vehicleDTO, int driversCount) {
-        return vehicleRepository.findById(vehicleDTO.getId())
+    public Integer update(VehicleUpdateDTO vehicleUpdateDTO, int driversCount) {
+        return vehicleRepository.findById(vehicleUpdateDTO.getId())
                 .map(x -> {
-                    if (vehicleDTO.getEnterpriseId() != x.getEnterprise().getId() && driversCount > 0) {
+                    if (vehicleUpdateDTO.getEnterpriseId() != x.getEnterprise().getId() && driversCount > 0) {
                         return -3;
                     }
-                    Integer vehicleWithThisActiveDriver = vehicleRepository.findByActiveDriverId(vehicleDTO.getActiveDriverId(), vehicleDTO.getId());
+                    Integer vehicleWithThisActiveDriver = vehicleRepository.findByActiveDriverId(vehicleUpdateDTO.getActiveDriverId(), vehicleUpdateDTO.getId());
                     if (vehicleWithThisActiveDriver != null) {
                         return vehicleWithThisActiveDriver;
                     }
-                    vehicleMapper.update(vehicleDTO, x);
+                    //у вытащенного объекта меняем поля на новые (те, которые есть в VehicleDTO)
+                    vehicleMapper.update(vehicleUpdateDTO, x);
                     vehicleRepository.save(x);
                     return -1;
                 })

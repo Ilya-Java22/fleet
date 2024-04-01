@@ -20,4 +20,8 @@
     <include file="scripts/013_dml_insert_users_authorities_enterprises_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/014_ddl_create_users_authorities_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/015_dml_insert_users_authorities_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/016_ddl_alter_table_vehicles_add_purchased_column.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/017_dml_insert_vehicles_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/018_ddl_alter_table_enterprises_add_timezone_column.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/019_dml_insert_enterprises_table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

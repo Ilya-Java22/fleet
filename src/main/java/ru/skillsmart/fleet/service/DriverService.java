@@ -11,5 +11,5 @@ public interface DriverService {
     List<Driver> saveAll(List<Driver> driverList);
 
     List<Driver> findAllByEnterpriseId(int enterpriseId);
-    List<Driver> findAllByVehicle(VehicleDTO vehicleDTO);
+    List<Driver> findAllByVehicleId(int id);
 }

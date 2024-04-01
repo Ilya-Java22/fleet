@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.skillsmart.fleet.dto.VehicleCreateDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
+import ru.skillsmart.fleet.dto.VehicleDTOWithZonedDateTime;
+import ru.skillsmart.fleet.dto.VehicleUpdateDTO;
 import ru.skillsmart.fleet.model.Vehicle;
 
 import java.util.List;
@@ -16,7 +18,7 @@ public interface VehicleService {
     Page<VehicleDTO> findAllDto(Pageable pageable);
     List<Vehicle> findAll();
     Optional<Vehicle> findById(int id);
-    Optional<VehicleDTO> findVehicleDTOById(int id);
+    Optional<VehicleDTOWithZonedDateTime> findVehicleDTOWithZonedDateTimeById(int id);
     boolean deleteByVehicle(Vehicle vehicle);
 //    Optional<Vehicle> findVehicleById(int id);
 
@@ -24,6 +26,6 @@ public interface VehicleService {
     Optional<Vehicle> save(Vehicle vehicle);
     Optional<VehicleDTO> saveDTO(VehicleCreateDTO vehicleCreateDTO);
 //    boolean deleteById(int id);
-    Integer update(VehicleDTO vehicleDTO, int driversCount);
+    Integer update(VehicleUpdateDTO vehicleUpdateDTO, int driversCount);
     void moveVehicleToEnterprise(Vehicle vehicle, Integer newEnterpriseId);
 }

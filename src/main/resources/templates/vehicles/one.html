@@ -6,15 +6,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/js/code.jquery.com_jquery-3.7.0.min.js}"></script>
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/js-joda.min.js}"></script>
+    <script th:src="@{/js/js-joda-timezone.js}"></script>
+<!--    <script src="https://cdn.jsdelivr.net/npm/js-joda-timezone@latest/dist/js-joda-timezone.min.js"></script>-->
+
+    <script th:src="@{/js/moment.js}"></script>
+    <script th:src="@{/js/moment-timezone-with-data.js}"></script>
 
     <title>Редактирование машины</title>
 </head>
 <body>
 <div class="container-fluid p-0">
     <header th:insert="~{blocks/header :: header}"></header>
-    <div class="container">
+    <div class="container mt-2">
+        <h3>Машина с id = [[${vehicle.id}]]</h3>
         <form class="mt-3" th:action="@{/vehicle/update}" method="post" th:object="${vehicle}" enctype="multipart/form-data">
                 <input type="hidden" name="id" th:field="*{id}">
                 <input type="hidden" name="driversCount" th:value="${drivers.size()}">
@@ -36,6 +43,15 @@
                 <select class="form-control" id="drivers" name="activeDriverId">
                     <option th:each="driver : ${drivers}" th:value="${driver.id}" th:text="${driver.name}" th:field="*{activeDriverId}" th:selected="${driver.id==activeDriverId}"></option>
                 </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="purchased" class="form-label"><b>Время покупки</b></label>
+                <input type="hidden" name="zonedDateTime" th:value="${vehicle.purchased}">
+                <input type="datetime-local" class="form-control" id="purchased" name="purchased" th:value="${vehicle.purchased.toLocalDateTime()}" readonly>
+                <!--рабит с ZonedDateTime-->
+<!--                <input type="datetime-local" class="form-control" id="purchased" name="purchased" th:value="${#temporals.format(vehicle.purchased, 'yyyy-MM-dd HH:mm')}" readonly>-->
+
             </div>
             <div class="mb-3">
                 <label for="releaseYear" class="form-label"><b>Год выпуска</b></label>
@@ -59,6 +75,24 @@
                     </div>
                 </div>
             </div>
+            <script th:inline="javascript">
+                window.onload = function() {
+                    //console.log(JSJoda.ZoneId.getAvailableZoneIds());
+                    // Извлекаем объект ZonedDateTime
+                    const zonedDateTimeInputValue = document.querySelector('input[name="zonedDateTime"]').value;
+                    //оставляем только дату время и смещение, избавляемся от буквенного хвоста Asia/Moscow, который js-joda не сможет распарсить
+                    const parts = zonedDateTimeInputValue.split('[');
+                    const timeWithoutZone = parts[0];
+                    const zonedDateTime = JSJoda.ZonedDateTime.parse(timeWithoutZone);
+                    //средствами JS берем временную зону браузера
+                    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    //превращаем ее в зону, понятную js-joda (!!! НЕОБХОДИМА БИБЛИОТЕКА JS-JODE_TIMEZONE!!!)
+                    const zone = JSJoda.ZoneId.of(timeZone);
+                    //преобразуем распарсенный zoneddatetime ко времени браузера, превращаем в localdatetime и присваиваем полю
+                    const localDateTime = zonedDateTime.withZoneSameInstant(zone).toLocalDateTime().toString();
+                    document.getElementById('purchased').value = localDateTime;
+                };
+            </script>
         </form>
     </div>
 </div>

@@ -2,6 +2,7 @@ package ru.skillsmart.fleet.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,14 +13,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.skillsmart.fleet.dto.VehicleCreateDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
+import ru.skillsmart.fleet.dto.VehicleUpdateDTO;
 import ru.skillsmart.fleet.mapper.EnterpriseMapper;
 import ru.skillsmart.fleet.mapper.VehicleMapper;
 import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.service.*;
+import ru.skillsmart.fleet.utility.TimeZoneUtility;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,28 +73,28 @@ public class VehicleController {
 
     @GetMapping("/vehicle/{id}")
     public String getById(Model model, @PathVariable int id, @RequestParam("enterpriseId") int enterpriseId,
-                          @RequestParam("enterpriseName") String enterpriseName, Principal principal) {
+                          @RequestParam("enterpriseName") String enterpriseName, Principal principal, HttpServletRequest request) {
         //getReffered?
-        var vehicleDTOOptional = vehicleService.findVehicleDTOById(id);
-        if (vehicleDTOOptional.isEmpty()) {
+        var vehicleDTOZonedDTOptional = vehicleService.findVehicleDTOWithZonedDateTimeById(id);
+        if (vehicleDTOZonedDTOptional.isEmpty()) {
             model.addAttribute("message", "Машина с указанным идентификатором не найдена в базе");
             return "errors/404";
         }
-        var vehicleDTO = vehicleDTOOptional.get();
-        if (vehicleDTO.getEnterpriseId() != enterpriseId) {
+        var vehicleDTOZonedDT = vehicleDTOZonedDTOptional.get();
+        if (vehicleDTOZonedDT.getEnterpriseId() != enterpriseId) {
             model.addAttribute("message", "Машина с указанным идентификатором не закреплена за данным предприятием");
             return "errors/404";
         }
+        //TimeZoneUtility.setClientTimeZone(vehicleDTO, request);
         model.addAttribute("enterpriseId", enterpriseId);
         model.addAttribute("enterpriseName", enterpriseName);
         model.addAttribute("enterprises", enterpriseService.findUserEnterprises(principal.getName()));
         model.addAttribute("brands", brandService.findAll());
-        model.addAttribute("drivers", driverService.findAllByVehicle(vehicleDTO));
+        model.addAttribute("drivers", driverService.findAllByVehicleId(vehicleDTOZonedDT.getId()));
 //        model.addAttribute("drivers", driverService.findAllByEnterpriseId(enterpriseId));
-        model.addAttribute("vehicle", vehicleDTO);
+        model.addAttribute("vehicle", vehicleDTOZonedDT);
         return "vehicles/one";
     }
-
 
     @GetMapping("/vehicle/create")
     public String getCreationPage(Model model, @RequestParam("enterpriseId") int enterpriseId, @RequestParam("enterpriseName") String enterpriseName) {
@@ -126,9 +133,9 @@ public class VehicleController {
     }
 
     @PostMapping("/vehicle/update")
-    public String update(@ModelAttribute VehicleDTO vehicleDTO, Model model, @RequestParam("driversCount") int driversCount) {
+    public String update(@ModelAttribute VehicleUpdateDTO vehicleUpdateDTO, Model model, @RequestParam("driversCount") int driversCount) {
         try {
-            var status = vehicleService.update(vehicleDTO, driversCount);
+            var status = vehicleService.update(vehicleUpdateDTO, driversCount);
             if (status == -2) {
                 model.addAttribute("message", "Машина с указанным идентификатором не найдена");
                 return "errors/404";

@@ -1,0 +1,1 @@
+ ALTER TABLE enterprises ADD COLUMN if not exists timezone VARCHAR;

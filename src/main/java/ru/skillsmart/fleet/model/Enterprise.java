@@ -24,6 +24,17 @@ public class Enterprise {
     private String name;
     private String city;
 
+    @Column(columnDefinition = "VARCHAR DEFAULT 'UTC'")
+    private String timezone;
+
+    //еще preupdate есть
+    @PrePersist
+    public void prePersist() {
+        if (this.timezone == null) {
+            this.timezone = "UTC";
+        }
+    }
+
 //    @JoinColumn(name = "enterprise_id") если бы была односторонняя связь (в Driver нет поля Е, но есть столбец,
 //    этого бы плюс просто @OneToMany хватило, но делаю двустороннюю, так как сохраняю машину с предприятием, а не наоборот (см. генерацию данных)
     @OneToMany(mappedBy = "enterprise", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

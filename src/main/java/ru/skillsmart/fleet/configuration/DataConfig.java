@@ -44,6 +44,7 @@ public class DataConfig {
         final Properties jpaProperties = new Properties();
         jpaProperties.setProperty("hibernate.show_sql", "true");
         jpaProperties.setProperty("hibernate.format_sql", "true");
+        jpaProperties.setProperty("hibernate.jdbc.time_zone", "UTC");
 //        jpaProperties.setProperty("logging.level.org.hibernate.type", "trace");
 //        jpaProperties.setProperty("hibernate.type", "trace");
 //        jpaProperties.setProperty("logging.level.org.hibernate.orm.jdbc.bind", "trace");

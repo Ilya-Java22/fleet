@@ -1,0 +1,1 @@
+ ALTER TABLE vehicles ADD COLUMN if not exists purchased TIMESTAMP WITHOUT TIME ZONE;

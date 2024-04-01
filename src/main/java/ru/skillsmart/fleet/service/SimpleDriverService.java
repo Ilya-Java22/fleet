@@ -29,7 +29,7 @@ public class SimpleDriverService implements DriverService {
     }
 
     @Override
-    public List<Driver> findAllByVehicle(VehicleDTO vehicleDTO) {
-        return driverRepository.findAllByVehicle(vehicleMapper.getEntityFromDTOModel(vehicleDTO));
+    public List<Driver> findAllByVehicleId(int id) {
+        return driverRepository.findAllByVehicleId(id);
     }
 }
