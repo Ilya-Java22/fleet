@@ -43,4 +43,13 @@ public class TimeZoneUtility {
         dto.setPurchased(newZonedDateTime);
         return dto;
     }
+
+    public static LocalDateTime convertTimeZone(LocalDateTime localDateTime, ZoneId initialZoneId, String newTimeZone) {
+//        String enterpriseTimeZone = vehicle.getEnterprise().getTimezone();
+//        var defaultZone = TimeZone.getDefault().toZoneId();
+        return  localDateTime
+                .atZone(initialZoneId)
+                .withZoneSameInstant(ZoneId.of(newTimeZone))
+                .toLocalDateTime();
+    }
 }

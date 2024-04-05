@@ -37,6 +37,7 @@ public class Enterprise {
 
 //    @JoinColumn(name = "enterprise_id") если бы была односторонняя связь (в Driver нет поля Е, но есть столбец,
 //    этого бы плюс просто @OneToMany хватило, но делаю двустороннюю, так как сохраняю машину с предприятием, а не наоборот (см. генерацию данных)
+// И! односторонняя onetomany это плохо) лишние запросы https://sysout.ru/otnoshenie-onetomany-v-hibernate-i-spring/
     @OneToMany(mappedBy = "enterprise", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Driver> driversSet = new HashSet<>();
 

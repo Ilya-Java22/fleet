@@ -51,9 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //данный вариант - "JDBC-Аутентификация со своими таблицами"
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and().authorizeRequests()
-        //http.authorizeRequests()
+//        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                .and().authorizeRequests()
+        http.authorizeRequests()
                     .antMatchers("/css/**", "/js/**")
                     .permitAll()
                     .antMatchers("/api/**")
@@ -79,10 +79,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutSuccessUrl("/login?logout=true")
                 .invalidateHttpSession(true)
-                .permitAll();
-//                .and()
-//                .csrf()
-//                .disable();
+                .permitAll()
+                .and()
+                .csrf()
+                .disable();
     }
 
 }

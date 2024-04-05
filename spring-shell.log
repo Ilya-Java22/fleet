@@ -28,3 +28,5 @@
 1709924226801:2024-03-09 01:54:46.380  INFO 10556 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 1709924226807:Process finished with exit code 130
 1709924897483:generate-data --enterprises-id 1,2,3 --number-of-vehicles 3500 --number-of-drivers 2
+1712166478447:help
+1712166485661:exit

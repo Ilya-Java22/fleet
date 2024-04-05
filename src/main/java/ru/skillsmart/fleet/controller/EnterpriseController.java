@@ -55,8 +55,9 @@ public class EnterpriseController {
         return "enterprises/list";
     }
 
+    //при большом кол-ве машин и водителей надо бы переделать на пагинацию либо убрать поля из dto
     @ResponseBody
-    @GetMapping(path = "/api/enterprise/", produces = "application/json")
+    @GetMapping(path = "/api/enterprise", produces = "application/json")
     public List<EnterpriseDTO> getEnterprisesForManager(Principal principal) {
         String username = principal.getName();
         List<EnterpriseDTO> enterprises = enterpriseService.findUserEnterprisesWithDriversVehiclesDto(username);

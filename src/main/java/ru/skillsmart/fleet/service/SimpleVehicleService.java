@@ -39,9 +39,14 @@ public class SimpleVehicleService implements VehicleService {
 //                .toList();
 //    }
 
+    //а нормально ли пустой лист возвращать, что там будет в контроллере? ps добавил проверку на пустое позже, так что...)
     @Override
     public Page<VehicleDTO> findAllDto(Pageable pageable) {
-        return vehicleRepository.findAll(pageable)
+        Page<Vehicle> vehiclesPage = vehicleRepository.findAll(pageable);
+        if (vehiclesPage.isEmpty()) {
+            return Page.empty();
+        }
+        return vehiclesPage
                 .map(TimeZoneUtility::setEnterpriseTimeZoneForVehicle)
                 .map(vehicleMapper::getModelFromEntity);
     }

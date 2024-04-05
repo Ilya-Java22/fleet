@@ -1,9 +1,12 @@
 package ru.skillsmart.fleet.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,24 +14,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.skillsmart.fleet.dto.TrackPointDTO;
 import ru.skillsmart.fleet.dto.VehicleCreateDTO;
 import ru.skillsmart.fleet.dto.VehicleDTO;
 import ru.skillsmart.fleet.dto.VehicleUpdateDTO;
 import ru.skillsmart.fleet.mapper.EnterpriseMapper;
 import ru.skillsmart.fleet.mapper.VehicleMapper;
+import ru.skillsmart.fleet.model.TrackPoint;
 import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.service.*;
-import ru.skillsmart.fleet.utility.TimeZoneUtility;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 //@RequestMapping("/vehicle")
 @Controller
@@ -37,14 +38,15 @@ public class VehicleController {
     private final VehicleService vehicleService;
     private final BrandService brandService;
     private final EnterpriseService enterpriseService;
-
     private final DriverService driverService;
+    private final TrackPointService trackPointService;
 
-    public VehicleController(VehicleService vehicleService, BrandService brandService, UserService userService, EnterpriseService enterpriseService, EnterpriseMapper enterpriseMapper, VehicleMapper vehicleMapper, DriverService driverService) {
+    public VehicleController(VehicleService vehicleService, BrandService brandService, UserService userService, EnterpriseService enterpriseService, EnterpriseMapper enterpriseMapper, VehicleMapper vehicleMapper, DriverService driverService, TrackPointService trackPointService) {
         this.vehicleService = vehicleService;
         this.brandService = brandService;
         this.enterpriseService = enterpriseService;
         this.driverService = driverService;
+        this.trackPointService = trackPointService;
     }
 
 //    заменил на пагинацю, см. ниже
@@ -54,12 +56,26 @@ public class VehicleController {
 //    }
 
     @GetMapping(path = "/api/vehicle/", produces = "application/json")
-    public @ResponseBody Page<VehicleDTO> findAll(
+    public @ResponseBody ResponseEntity<Object> findAll(
             @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @RequestParam(value = "limit", defaultValue = "20") @Min(1) @Max(100) Integer limit
     ) {
-        return this.vehicleService.findAllDto(PageRequest.of(offset, limit));
+        //проверку на пустое добавил позже
+        Page<VehicleDTO> page = this.vehicleService.findAllDto(PageRequest.of(offset, limit));
+        if (page.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(page, HttpStatus.OK);
     }
+    //до моего решения добавить проверку на пустое, метод был таким (новый не проверял на работоспособность)
+//    @GetMapping(path = "/api/vehicle/", produces = "application/json")
+//    public @ResponseBody Page<VehicleDTO> findAll(
+//            @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+//            @RequestParam(value = "limit", defaultValue = "20") @Min(1) @Max(100) Integer limit
+//    ) {
+//        return this.vehicleService.findAllDto(PageRequest.of(offset, limit));
+//    }
+
 
     // убрал, это старый метод, когда кол-ва машин немного
 //    @GetMapping(path = "/vehicle")
@@ -197,5 +213,38 @@ public class VehicleController {
 //        }
 //        model.addAttribute("message", "Машина удалена!");
 //        return "success/success";
+    }
+
+    @GetMapping("/api/vehicle/{vehicleId}/trackPoints")
+    public ResponseEntity<Object> getTrackPointsForVehicleInDateRange(@PathVariable Integer vehicleId,
+                                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+                                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+                                                                                @RequestParam(name = "format", required = false) String outputDataFormat,
+                                                                                Principal principal) {
+        Vehicle vehicle = vehicleService.findById(vehicleId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Vehicle is not found. Please, check id."
+                ));
+        //забыл почему мы тут беспроблемно вытаскиваем ленивый enterprise))
+        if (!enterpriseService.checkUserAccessToEnterprise(principal.getName(), vehicle.getEnterprise().getId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        List<TrackPointDTO> trackPoints = trackPointService.getTrackPointsByVehicleAndDateRange(vehicle, startDate, endDate);
+
+        if (trackPoints.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        if ("geoJSON".equalsIgnoreCase(outputDataFormat)) {
+            ObjectNode geoJson = trackPointService.convertTrackPointsToGeoJson(trackPoints);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            return new ResponseEntity<>(geoJson, headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(trackPoints, HttpStatus.OK);
+        }
     }
 }

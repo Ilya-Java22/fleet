@@ -40,6 +40,11 @@ public class Vehicle {
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AssingingDriversToVehicles> assingingDriversToVehicles = new ArrayList<>();
 
+    //добавил позже, надо проверить, не будет ли декарта всплывать где
+    //не забудь доп методы для согласованности двустороннего отношения.
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TrackPoint> trackPoints = new ArrayList<>();
+
 //    @PreRemove
 //    public void remove() {
 //        assingingDriversToVehicles.forEach(position -> {

@@ -1,6 +1,7 @@
 package ru.skillsmart.fleet.configuration;
 
 import javax.persistence.*;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,8 @@ public class DataConfig {
         jpaProperties.setProperty("hibernate.show_sql", "true");
         jpaProperties.setProperty("hibernate.format_sql", "true");
         jpaProperties.setProperty("hibernate.jdbc.time_zone", "UTC");
+        jpaProperties.setProperty("hibernate.dialect", "org.hibernate.spatial.dialect.postgis.PostgisDialect");
+       // jpaProperties.setProperty("hibernate.dialect", "org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect");
 //        jpaProperties.setProperty("logging.level.org.hibernate.type", "trace");
 //        jpaProperties.setProperty("hibernate.type", "trace");
 //        jpaProperties.setProperty("logging.level.org.hibernate.orm.jdbc.bind", "trace");
