@@ -18,9 +18,6 @@ public class DataGenerationShell {
     @Autowired
     private DataGenerationService dataGenerationService;
 
-    @Autowired
-    private EnterpriseService enterpriseService;
-
     @ShellMethod("Generate data for enterprises")
     //public String generateDataForEnterprises(String enterpriseIds, int numberOfVehicles, int numberOfDrivers) {
     public String generateData(
