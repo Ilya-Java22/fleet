@@ -8,34 +8,44 @@ import org.springframework.stereotype.Service;
 import ru.skillsmart.fleet.dto.TrackPointDTO;
 import ru.skillsmart.fleet.mapper.TrackPointMapper;
 import ru.skillsmart.fleet.model.TrackPoint;
+import ru.skillsmart.fleet.model.Trip;
 import ru.skillsmart.fleet.model.Vehicle;
-import ru.skillsmart.fleet.repository.TrackPointRepository;
+import ru.skillsmart.fleet.repository.TripRepository;
 import ru.skillsmart.fleet.utility.TimeZoneUtility;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Service
-public class SimpleTrackPointService implements TrackPointService {
+public class SimpleTripService implements TripService {
 
-    private final TrackPointRepository trackPointRepository;
+    private final TripRepository tripRepository;
     private final TrackPointMapper trackPointMapper;
 
 
-    public SimpleTrackPointService(TrackPointRepository trackPointRepository, TrackPointMapper trackPointMapper) {
-        this.trackPointRepository = trackPointRepository;
+    public SimpleTripService(TripRepository tripRepository, TrackPointMapper trackPointMapper) {
+        this.tripRepository = tripRepository;
         this.trackPointMapper = trackPointMapper;
     }
 
     @Override
-    public List<TrackPointDTO> getTrackPointsByVehicleAndDateRange(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
-        List<TrackPoint> trackPoints = trackPointRepository.findByVehicleIdAndTimeBetween(vehicle.getId(), startDate, endDate);
-        if (trackPoints.isEmpty()) {
+    public List<TrackPointDTO> getTripsPointsByVehicleAndDateRange(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Trip> trips = tripRepository.findByVehicleIdAndTimeBetween(vehicle.getId(), startDate, endDate);
+
+        if (trips.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<TrackPointDTO> trackPointsDTO = trackPoints.stream()
+        List<TrackPoint> orderedTrackPoints = trips.stream().
+                flatMap(trip -> trip.getTrackPoints().stream())
+                .sorted(Comparator.comparing(TrackPoint::getTime))
+                .toList();
+
+        List<TrackPointDTO> trackPointsDTO = orderedTrackPoints.stream()
                 .map(trackPointMapper::getModelFromEntity)
                 .collect(Collectors.toList());
 
@@ -52,7 +62,7 @@ public class SimpleTrackPointService implements TrackPointService {
     }
 
     @Override
-    public ObjectNode convertTrackPointsToGeoJson(List<TrackPointDTO> trackPoints) {
+    public ObjectNode convertTripsPointsToGeoJson(List<TrackPointDTO> trackPoints) {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode geoJson = objectMapper.createObjectNode();
         geoJson.put("type", "FeatureCollection");
@@ -64,6 +74,7 @@ public class SimpleTrackPointService implements TrackPointService {
 
             ObjectNode properties = feature.putObject("properties");
             properties.put("time", trackPoint.getTime().toString());
+            properties.put("tripId", trackPoint.getTripId());
 
             ObjectNode geometry = feature.putObject("geometry");
             geometry.put("type", "Point");

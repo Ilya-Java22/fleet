@@ -15,6 +15,7 @@ import ru.skillsmart.fleet.model.Vehicle;
 public interface TrackPointMapper {
         @Mapping(target = "coordinateX", source = "point", qualifiedByName = "pointToX")
         @Mapping(target = "coordinateY", source = "point", qualifiedByName = "pointToY")
+        @Mapping(target = "tripId", source = "trackPoint.trip.id")
         //@Mapping(target = "vehicleId", source = "vehicle.id")
         TrackPointDTO getModelFromEntity(TrackPoint trackPoint);
 

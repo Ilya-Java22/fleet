@@ -43,7 +43,7 @@ public class Vehicle {
     //добавил позже, надо проверить, не будет ли декарта всплывать где
     //не забудь доп методы для согласованности двустороннего отношения.
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TrackPoint> trackPoints = new ArrayList<>();
+    private List<Trip> trips = new ArrayList<>();
 
 //    @PreRemove
 //    public void remove() {

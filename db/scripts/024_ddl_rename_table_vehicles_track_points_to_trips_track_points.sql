@@ -1,0 +1,1 @@
+ALTER TABLE vehicles_track_points RENAME TO trips_track_points;

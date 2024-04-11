@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrackPointDTO {
+    private int tripId;
     private LocalDateTime time;
     private double coordinateX;
     private double coordinateY;

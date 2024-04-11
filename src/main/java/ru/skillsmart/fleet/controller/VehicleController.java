@@ -39,14 +39,16 @@ public class VehicleController {
     private final BrandService brandService;
     private final EnterpriseService enterpriseService;
     private final DriverService driverService;
-    private final TrackPointService trackPointService;
+    private final TripService tripService;
 
-    public VehicleController(VehicleService vehicleService, BrandService brandService, UserService userService, EnterpriseService enterpriseService, EnterpriseMapper enterpriseMapper, VehicleMapper vehicleMapper, DriverService driverService, TrackPointService trackPointService) {
+    public VehicleController(VehicleService vehicleService, BrandService brandService, UserService userService,
+                             EnterpriseService enterpriseService, EnterpriseMapper enterpriseMapper, VehicleMapper vehicleMapper,
+                             DriverService driverService, TripService tripService) {
         this.vehicleService = vehicleService;
         this.brandService = brandService;
         this.enterpriseService = enterpriseService;
         this.driverService = driverService;
-        this.trackPointService = trackPointService;
+        this.tripService = tripService;
     }
 
 //    заменил на пагинацю, см. ниже
@@ -215,12 +217,15 @@ public class VehicleController {
 //        return "success/success";
     }
 
-    @GetMapping("/api/vehicle/{vehicleId}/trackPoints")
-    public ResponseEntity<Object> getTrackPointsForVehicleInDateRange(@PathVariable Integer vehicleId,
-                                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-                                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-                                                                                @RequestParam(name = "format", required = false) String outputDataFormat,
-                                                                                Principal principal) {
+
+    //до введения понятия Trip был такой запрос: @GetMapping("/api/vehicle/{vehicleId}/trackPoints")
+    //    public ResponseEntity<Object> getTrackPointsForVehicleInDateRange
+    @GetMapping("/api/vehicle/{vehicleId}/trips")
+    public ResponseEntity<Object> getTripsForVehicleInDateRange(@PathVariable Integer vehicleId,
+                                                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+                                                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+                                                                      @RequestParam(name = "format", required = false) String outputDataFormat,
+                                                                      Principal principal) {
         Vehicle vehicle = vehicleService.findById(vehicleId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Vehicle is not found. Please, check id."
@@ -230,21 +235,21 @@ public class VehicleController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        List<TrackPointDTO> trackPoints = trackPointService.getTrackPointsByVehicleAndDateRange(vehicle, startDate, endDate);
+        List<TrackPointDTO> tripsPoints = tripService.getTripsPointsByVehicleAndDateRange(vehicle, startDate, endDate);
 
-        if (trackPoints.isEmpty()) {
+        if (tripsPoints.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
         if ("geoJSON".equalsIgnoreCase(outputDataFormat)) {
-            ObjectNode geoJson = trackPointService.convertTrackPointsToGeoJson(trackPoints);
+            ObjectNode geoJson = tripService.convertTripsPointsToGeoJson(tripsPoints);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             return new ResponseEntity<>(geoJson, headers, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(trackPoints, HttpStatus.OK);
+            return new ResponseEntity<>(tripsPoints, HttpStatus.OK);
         }
     }
 }

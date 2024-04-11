@@ -38,6 +38,7 @@ public class FleetApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FleetApplication.class, args);
+		//эти выражения для сохранения с 19 коммита не релевантны, мы теперь сохраняем поездки, не точки
 ////		GeometryFactory geometryFactory = new GeometryFactory();
 //		int srid = 4326; // Пример SRID для WGS 84
 //		GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), srid);

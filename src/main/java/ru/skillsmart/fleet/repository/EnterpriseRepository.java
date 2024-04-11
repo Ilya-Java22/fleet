@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface EnterpriseRepository extends JpaRepository<Enterprise, Integer> {
 
+    //проверить бы на дубли (?надо distinct) все эти 4 метода... вроде они в последующих редакциях нигде не используются, это их спасает)
     @Query("from Enterprise e LEFT JOIN FETCH e.vehiclesSet")
     List<Enterprise> findAllWithVehicles();
 
