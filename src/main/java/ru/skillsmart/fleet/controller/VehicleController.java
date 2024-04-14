@@ -14,10 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.skillsmart.fleet.dto.TrackPointDTO;
-import ru.skillsmart.fleet.dto.VehicleCreateDTO;
-import ru.skillsmart.fleet.dto.VehicleDTO;
-import ru.skillsmart.fleet.dto.VehicleUpdateDTO;
+import ru.skillsmart.fleet.dto.*;
 import ru.skillsmart.fleet.mapper.EnterpriseMapper;
 import ru.skillsmart.fleet.mapper.VehicleMapper;
 import ru.skillsmart.fleet.model.TrackPoint;
@@ -220,8 +217,9 @@ public class VehicleController {
 
     //до введения понятия Trip был такой запрос: @GetMapping("/api/vehicle/{vehicleId}/trackPoints")
     //    public ResponseEntity<Object> getTrackPointsForVehicleInDateRange
-    @GetMapping("/api/vehicle/{vehicleId}/trips")
-    public ResponseEntity<Object> getTripsForVehicleInDateRange(@PathVariable Integer vehicleId,
+    //метод выдает единый список точек трипов, попавших целиком в указанный диапазон времени
+    @GetMapping("/api/vehicle/{vehicleId}/trips-points")
+    public ResponseEntity<Object> getTripsPointsForVehicleInDateRange(@PathVariable Integer vehicleId,
                                                                       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
                                                                       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
                                                                       @RequestParam(name = "format", required = false) String outputDataFormat,
@@ -251,5 +249,28 @@ public class VehicleController {
         } else {
             return new ResponseEntity<>(tripsPoints, HttpStatus.OK);
         }
+    }
+
+    //метод выдает единый список точек трипов, попавших целиком в указанный диапазон времени
+    @GetMapping("/api/vehicle/{vehicleId}/trips")
+    public ResponseEntity<Object> getTripsForVehicleInDateRange(@PathVariable Integer vehicleId,
+                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+                                                                Principal principal) {
+        Vehicle vehicle = vehicleService.findById(vehicleId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Vehicle is not found. Please, check id."
+                ));
+        //забыл почему мы тут беспроблемно вытаскиваем ленивый enterprise))
+        if (!enterpriseService.checkUserAccessToEnterprise(principal.getName(), vehicle.getEnterprise().getId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        List<TripDTO> listTripDTO = tripService.getTripsByVehicleAndDateRange(vehicle, startDate, endDate);
+
+        if (listTripDTO.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(listTripDTO, HttpStatus.OK);
     }
 }

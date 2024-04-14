@@ -29,4 +29,8 @@
     <include file="scripts/022_ddl_alter_table_vehicles_track_points.sql" relativeToChangelogFile="true"/>
     <include file="scripts/023_dml_insert_trips_table_vehicles_track_points_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/024_ddl_rename_table_vehicles_track_points_to_trips_track_points.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/025_ddl_alter_table_trips.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/026_ddl_alter_table_trips.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/027_ddl_alter_table_trips_track_points_alter_column_trip_id_set_not_null.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/028_ddl_alter_table_trips_add_address_columns.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.skillsmart.fleet.model.*;
 import ru.skillsmart.fleet.repository.AssingingDriversToVehiclesRepository;
 import ru.skillsmart.fleet.repository.DriverRepository;
-import ru.skillsmart.fleet.repository.TrackPointRepository;
 import ru.skillsmart.fleet.repository.VehicleRepository;
 import ru.skillsmart.fleet.service.EnterpriseService;
 
@@ -23,17 +22,14 @@ public class FleetApplication {
 	private static DriverRepository driverRepository;
 	private static EnterpriseService enterpriseService;
 	private static AssingingDriversToVehiclesRepository assingingDriversToVehiclesRepository;
-	private static TrackPointRepository trackPointRepository;
-
 	//public static TransactionManager t;
 
 	public FleetApplication(VehicleRepository vehicleRepository, DriverRepository driverRepository,
-							EnterpriseService enterpriseService, AssingingDriversToVehiclesRepository assingingDriversToVehiclesRepository, TrackPointRepository trackPointRepository) {
+							EnterpriseService enterpriseService, AssingingDriversToVehiclesRepository assingingDriversToVehiclesRepository) {
 		this.vehicleRepository = vehicleRepository;
 		this.driverRepository = driverRepository;
 		this.enterpriseService = enterpriseService;
 		this.assingingDriversToVehiclesRepository = assingingDriversToVehiclesRepository;
-		this.trackPointRepository = trackPointRepository;
 	}
 
 	public static void main(String[] args) {

@@ -41,7 +41,7 @@ public class Vehicle {
     private List<AssingingDriversToVehicles> assingingDriversToVehicles = new ArrayList<>();
 
     //добавил позже, надо проверить, не будет ли декарта всплывать где
-    //не забудь доп методы для согласованности двустороннего отношения.
+    //не забыть доп методы для согласованности двустороннего отношения, если надо будет.
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Trip> trips = new ArrayList<>();
 

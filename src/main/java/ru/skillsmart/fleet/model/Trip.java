@@ -18,11 +18,26 @@ public class Trip {
     @EqualsAndHashCode.Include
     private Integer id;
 
+    @Column(name = "distance_meters")
+    private double distanceInMeters;
+
     @Column(name = "start_time")
     private LocalDateTime startTime;
 
     @Column(name = "finish_time")
     private LocalDateTime finishTime;
+
+    @Column(name = "start_point")
+    private Point startPoint;
+
+    @Column(name = "finish_point")
+    private Point finishPoint;
+
+    @Column(name = "start_address")
+    private String startAddress;
+
+    @Column(name = "finish_address")
+    private String finishAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id")

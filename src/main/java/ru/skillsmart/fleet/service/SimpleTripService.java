@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 import ru.skillsmart.fleet.dto.TrackPointDTO;
+import ru.skillsmart.fleet.dto.TripDTO;
 import ru.skillsmart.fleet.mapper.TrackPointMapper;
+import ru.skillsmart.fleet.mapper.TripMapper;
 import ru.skillsmart.fleet.model.TrackPoint;
 import ru.skillsmart.fleet.model.Trip;
 import ru.skillsmart.fleet.model.Vehicle;
@@ -25,11 +27,13 @@ public class SimpleTripService implements TripService {
 
     private final TripRepository tripRepository;
     private final TrackPointMapper trackPointMapper;
+    private final TripMapper tripMapper;
 
 
-    public SimpleTripService(TripRepository tripRepository, TrackPointMapper trackPointMapper) {
+    public SimpleTripService(TripRepository tripRepository, TrackPointMapper trackPointMapper, TripMapper tripMapper) {
         this.tripRepository = tripRepository;
         this.trackPointMapper = trackPointMapper;
+        this.tripMapper = tripMapper;
     }
 
     @Override
@@ -97,4 +101,31 @@ public class SimpleTripService implements TripService {
 //            .create()
 //            .fromJson("{\"type\":\"Point\",\"coordinates\": [23.5,20.125]}");
 //    https://gis.stackexchange.com/questions/130913/geojson-java-library
+
+    @Override
+    public List<TripDTO> getTripsByVehicleAndDateRange(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Trip> trips = tripRepository.findByVehicleIdAndTimeBetween(vehicle.getId(), startDate, endDate);
+
+        if (trips.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<TripDTO> tripsDTO = trips.stream()
+                .map(tripMapper::getModelFromEntity)
+                .collect(Collectors.toList());
+
+        var defaultZone = TimeZone.getDefault().toZoneId();
+        String enterpriseTimeZone = vehicle.getEnterprise().getTimezone();
+
+        tripsDTO.forEach(tp -> {
+            LocalDateTime startTimeWithInitialTZ = tp.getStartTime();
+            LocalDateTime startTimeWithNewTZ = TimeZoneUtility.convertTimeZone(startTimeWithInitialTZ, defaultZone, enterpriseTimeZone);
+            tp.setStartTime(startTimeWithNewTZ);
+            LocalDateTime finishTimeWithInitialTZ = tp.getFinishTime();
+            LocalDateTime finishTimeWithNewTZ = TimeZoneUtility.convertTimeZone(finishTimeWithInitialTZ, defaultZone, enterpriseTimeZone);
+            tp.setFinishTime(finishTimeWithNewTZ);
+        });
+
+        return tripsDTO;
+    }
 }
