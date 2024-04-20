@@ -22,8 +22,8 @@
             <a style="padding-left: 20px;" th:href="@{/vehicle/create/?enterpriseId={enterpriseId}(enterpriseId=${enterpriseId}, enterpriseName=${enterpriseName})}">регистрация</a>
         </div>
         <div class="mb-3">
-            <p><b>2. Изменить информацию о машине</b></p>
-            <p style="padding-left: 20px;"><i>для обновления информации о машине, введите её id</i></p>
+            <p><b>2. Посмотреть/изменить информацию о машине</b></p>
+            <p style="padding-left: 20px;"><i>введите id машины</i></p>
             <div style="padding-left: 20px; margin-bottom: 14px;" >
                 <input type="number" class="form-control" id="vehicleId" name="vehicleId" style="width: 150px;" placeholder="id автомобиля" >
             </div>
@@ -31,7 +31,7 @@
 <!--            исходно такую штуку написал, но рабит и проще из-за скрипта-->
 <!--            <a id="vehicleLink" style="padding-left: 20px;" th:href="@{/vehicle/{id}/?enterpriseId={enterpriseId}(id=${vehicleId}, enterpriseId=${enterpriseId})}">изменить информацию о машине</a>-->
 <!--            для корректного возврата всё-таки пришлось и enterpriseName пихать-->
-            <a id="vehicleLink" style="padding-left: 20px;" th:href="@{/vehicle/{id}/?enterpriseId={enterpriseId}&enterpriseName={enterpriseName}}">изменить информацию о машине</a>-->
+            <a id="vehicleLink" style="padding-left: 20px;" th:href="@{/vehicle/{id}/?enterpriseId={enterpriseId}&enterpriseName={enterpriseName}}">показать информацию</a>-->
 
             <script th:inline="javascript">
                 /*<![CDATA[*/

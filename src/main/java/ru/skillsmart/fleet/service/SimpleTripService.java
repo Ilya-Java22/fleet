@@ -111,6 +111,7 @@ public class SimpleTripService implements TripService {
         }
 
         List<TripDTO> tripsDTO = trips.stream()
+                .sorted(Comparator.comparing(Trip::getStartTime))
                 .map(tripMapper::getModelFromEntity)
                 .collect(Collectors.toList());
 

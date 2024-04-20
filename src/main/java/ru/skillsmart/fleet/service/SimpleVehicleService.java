@@ -145,5 +145,4 @@ public class SimpleVehicleService implements VehicleService {
         vehicle.setEnterprise(enterpriseRepository.getReferenceById(newEnterpriseId));
         vehicleRepository.save(vehicle);
     }
-
 }

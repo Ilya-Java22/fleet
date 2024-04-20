@@ -17,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.skillsmart.fleet.dto.*;
 import ru.skillsmart.fleet.mapper.EnterpriseMapper;
 import ru.skillsmart.fleet.mapper.VehicleMapper;
-import ru.skillsmart.fleet.model.TrackPoint;
 import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.service.*;
 
@@ -37,15 +36,17 @@ public class VehicleController {
     private final EnterpriseService enterpriseService;
     private final DriverService driverService;
     private final TripService tripService;
+    private final TrackPointService trackPointService;
 
     public VehicleController(VehicleService vehicleService, BrandService brandService, UserService userService,
                              EnterpriseService enterpriseService, EnterpriseMapper enterpriseMapper, VehicleMapper vehicleMapper,
-                             DriverService driverService, TripService tripService) {
+                             DriverService driverService, TripService tripService, TrackPointService trackPointService) {
         this.vehicleService = vehicleService;
         this.brandService = brandService;
         this.enterpriseService = enterpriseService;
         this.driverService = driverService;
         this.tripService = tripService;
+        this.trackPointService = trackPointService;
     }
 
 //    заменил на пагинацю, см. ниже
@@ -249,6 +250,30 @@ public class VehicleController {
         } else {
             return new ResponseEntity<>(tripsPoints, HttpStatus.OK);
         }
+    }
+
+    @PostMapping("/api/vehicle/{vehicleId}/separate-trips-points")
+    public ResponseEntity<Object> getSeparateTripsPointsForVehicleInDateRange(@PathVariable Integer vehicleId,
+                                                                              @RequestBody Map<String, List<Integer>> selectedTrips,
+                                                                      Principal principal) {
+        Vehicle vehicle = vehicleService.findById(vehicleId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Vehicle is not found. Please, check id."
+                ));
+        //забыл почему мы тут беспроблемно вытаскиваем ленивый enterprise))
+        if (!enterpriseService.checkUserAccessToEnterprise(principal.getName(), vehicle.getEnterprise().getId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        List<Integer> tripsIds = selectedTrips.get("selectedTrips");
+
+        List<double[][]> tripsPoints = trackPointService.getTripsPoints(tripsIds);
+
+        if (tripsPoints.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(tripsPoints, HttpStatus.OK);
     }
 
     //метод выдает единый список точек трипов, попавших целиком в указанный диапазон времени

@@ -6,6 +6,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
+    <style>
+        th {
+            text-align: center;
+        }
+        td {
+            text-align: center; /* Центрируем содержимое ячеек по горизонтали */
+            vertical-align: middle; /* Центрируем содержимое ячеек по вертикали */
+        }
+        td:nth-child(3), td:nth-child(5) {
+            width:  325px; /* Задайте нужную вам ширину */
+            min-width: 325px; /* Минимальная ширина для гарантированного равенства */
+        }
+        td:nth-child(4), td:nth-child(6) {
+            width: 185px; /* Задайте нужную вам ширину */
+            min-width: 185px; /* Минимальная ширина для гарантированного равенства */
+        }
+        td:nth-child(2) {
+            width: 120px; /* Задайте нужную вам ширину */
+            min-width: 120px; /* Минимальная ширина для гарантированного равенства */
+        }
+        td:nth-child(1) {
+            width: 50px; /* Задайте нужную вам ширину */
+            min-width: 50px; /* Минимальная ширина для гарантированного равенства */
+        }
+        td:nth-child(7) {
+            width: 100px; /* Задайте нужную вам ширину */
+            min-width: 100px; /* Минимальная ширина для гарантированного равенства */
+        }
+    </style>
     <script th:src="@{/js/jquery-3.7.1.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
     <script th:src="@{/js/js-joda.min.js}"></script>
@@ -14,6 +43,9 @@
 
     <script th:src="@{/js/moment.js}"></script>
     <script th:src="@{/js/moment-timezone-with-data.js}"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <title>Редактирование машины</title>
 </head>
@@ -92,6 +124,205 @@
                     const localDateTime = zonedDateTime.withZoneSameInstant(zone).toLocalDateTime().toString();
                     document.getElementById('purchased').value = localDateTime;
                 };
+            </script>
+            <h4>Поездки</h4>
+            <!-- Добавляем кнопку "Показать поездки" и поля для ввода диапазона дат -->
+            <div class="mt-3">
+                <label for="startDate" class="form-label"><b>Начальная дата:</b></label>
+                <input type="datetime-local" id="startDate" name="startDate" class="form-control">
+            </div>
+            <div class="mt-3">
+                <label for="endDate" class="form-label"><b>Конечная дата:</b></label>
+                <input type="datetime-local" id="endDate" name="endDate" class="form-control">
+            </div>
+            <button class="btn btn-primary mt-3" id="showTrips">Показать поездки</button>
+            <!-- Здесь будет отображаться список поездок -->
+            <div id="tripsList" class="mt-3"></div>
+
+            <div id="map" style="height: 400px;"></div>
+
+            <script th:inline="javascript">
+                var show = document.getElementById('showTrips');
+
+                // document.addEventListener('click', function(event) {
+                //     if (event.target && event.target.textContent === 'Показать поездки') {
+                //         showTrips();
+                //     }
+                // });
+                show.addEventListener('click', function(event) {
+                    event.preventDefault(); // иначе перекидывает на обновление согласно <form class="mt-3" th:action="@{/vehicle/update}" method="post" th:object="${vehicle}" enctype="multipart/form-data">
+
+                    if (event.target && event.target.textContent === 'Показать поездки') {
+                            showTrips();
+                        }
+                });
+
+                function showTrips() {
+                    //event.preventDefault();
+
+                    var startDate = document.getElementById('startDate').value;
+                    var endDate = document.getElementById('endDate').value;
+
+                    fetch('/api/vehicle/' + [[${vehicle.id}]] + '/trips?startDate=' + startDate + '&endDate=' + endDate)
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw new Error('Ошибка HTTP: ' + response.status);
+                            }
+                        })
+                        .then(data => {
+                            var tripsList = document.getElementById('tripsList');
+                            tripsList.innerHTML = '';
+
+                            var table = document.createElement('table');
+                            table.classList.add('table');
+
+                            var thead = document.createElement('thead');
+                            var headerRow = document.createElement('tr');
+                            headerRow.innerHTML = '<th>#</th><th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"> Выбрать все</th><th>Место старта</th><th>Время старта</th><th>Место финиша</th><th>Время финиша</th><th>Дистанция</th>';
+                            thead.appendChild(headerRow);
+                            table.appendChild(thead);
+
+                            var tbody = document.createElement('tbody');
+                            data.forEach((trip, index) => {
+                                var row = document.createElement('tr');
+                                var cellNum = document.createElement('td');
+                                cellNum.textContent = index + 1;
+                                row.appendChild(cellNum);
+
+                                var cellCheckbox = document.createElement('td');
+                                var checkbox = document.createElement('input');
+                                checkbox.type = 'checkbox';
+                                checkbox.value = trip.tripId; // Используйте уникальный идентификатор поездки
+                                cellCheckbox.appendChild(checkbox);
+                                row.appendChild(cellCheckbox);
+
+                                var cellStartPlace = document.createElement('td');
+                                cellStartPlace.textContent = trip.startAddress;
+                                row.appendChild(cellStartPlace);
+
+                                var cellStartTime = document.createElement('td');
+                                cellStartTime.textContent = new Date(trip.startTime).toLocaleString();
+                                row.appendChild(cellStartTime);
+
+                                var cellFinishPlace = document.createElement('td');
+                                cellFinishPlace.textContent = trip.finishAddress;
+                                row.appendChild(cellFinishPlace);
+
+                                var cellFinishTime = document.createElement('td');
+                                cellFinishTime.textContent = new Date(trip.finishTime).toLocaleString();
+                                row.appendChild(cellFinishTime);
+
+                                var cellDistance = document.createElement('td');
+                                cellDistance.textContent = trip.distanceInMeters + ' м';
+                                row.appendChild(cellDistance);
+
+                                tbody.appendChild(row);
+                            });
+                            table.appendChild(tbody);
+                            tripsList.appendChild(table);
+
+                            // Добавляем кнопку "Построить карту с выбранными треками"
+                            var buildMapButton = document.createElement('button');
+                            buildMapButton.textContent = 'Построить карту с выбранными треками';
+                            buildMapButton.classList.add('btn', 'btn-primary', 'mt-3', 'mb-3');
+                            buildMapButton.setAttribute('id', 'buildMapButton'); // Добавляем id к кнопке
+                            //buildMapButton.onclick = buildMapWithSelectedTrips();
+                            tripsList.appendChild(buildMapButton);
+
+                            var showMap = document.getElementById('buildMapButton');
+
+                            showMap.addEventListener('click', function(event) {
+                                event.preventDefault(); // иначе перекидывает на обновление согласно <form class="mt-3" th:action="@{/vehicle/update}" method="post" th:object="${vehicle}" enctype="multipart/form-data">
+
+                                if (event.target && event.target.textContent === 'Построить карту с выбранными треками') {
+                                    buildMapWithSelectedTrips();
+                                }
+                            });
+
+                        })
+                        .catch(error => console.error('Ошибка загрузки данных: ' + error));
+                }
+
+                function toggleSelectAll() {
+                    var checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+                    var selectAllCheckbox = document.getElementById('selectAll');
+
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = selectAllCheckbox.checked;
+                    });
+                }
+
+                function buildMapWithSelectedTrips() {
+                    var selectedTripIds = [];
+                    document.querySelectorAll('tbody input[type="checkbox"]:checked').forEach(checkbox => {
+                        selectedTripIds.push(checkbox.value);
+                    });
+
+                    if (selectedTripIds.length === 0) {
+                        alert("Please select at least one trip.");
+                        return;
+                    }
+
+                    fetch('/api/vehicle/' + [[${vehicle.id}]] + '/separate-trips-points', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ selectedTrips: selectedTripIds })
+                    })
+                        .then(response => response.json())
+                        .then(tripsPoints => {
+                            if (tripsPoints.length > 0) {
+                                displayMap(tripsPoints);
+                            } else {
+                                alert('No trips points available.');
+                            }
+                        })
+                        .catch(error => console.error('Error loading map data: ', error));
+                }
+
+                function displayMap(tripsPoints) {
+                    // Функция для удаления предыдущей карты
+                    if (window.myMap) {
+                        window.myMap.remove();
+                    }
+
+                    // Создаем новую карту
+                    var map = L.map('map');
+                    window.myMap = map; // Сохраняем ссылку на карту в глобальной переменной для доступа в будущем
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap'
+                    }).addTo(map);
+
+                    var bounds = new L.LatLngBounds();
+                    var colors = ['red', 'blue', 'green', 'purple', 'orange', 'black'];
+
+                    tripsPoints.forEach((points, index) => {
+                        var latlngs = points.map(point => {
+                            var latlng = new L.LatLng(point[0], point[1]);
+                            bounds.extend(latlng);
+                            return latlng;
+                        });
+
+                        var colorIndex = index % colors.length;
+                        L.polyline(latlngs, {color: colors[colorIndex]}).addTo(map);
+                    });
+                    map.fitBounds(bounds);
+
+                    // var polyline = L.polyline(coords.map(coord => [coord[0], coord[1]]), {color: getRandomColor()}).addTo(map);
+                    // function getRandomColor() {
+                    //     var letters = '0123456789ABCDEF';
+                    //     var color = '#';
+                    //     for (var i = 0; i < 6; i++) {
+                    //         color += letters[Math.floor(Math.random() * 16)];
+                    //     }
+                    //     return color;
+                    // }
+                }
             </script>
         </form>
     </div>

@@ -35,9 +35,9 @@ public class TrackGenerationShell {
         return "Трек сгенерирован для машины с id = " + vehicleId;
     }
 
-    @PreDestroy
-    public void destroy() {
-        System.out.println("Track generation stopped");
-    }
+//    @PreDestroy
+//    public void destroy() {
+//        System.out.println("Track generation stopped");
+//    }
 
 }

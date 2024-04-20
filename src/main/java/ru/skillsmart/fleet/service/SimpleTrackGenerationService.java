@@ -156,6 +156,8 @@ public class SimpleTrackGenerationService implements TrackGenerationService {
         //1 мин долг = 1.85 км - это в терминах 60 мин = гр, если мы работаем в формате координат 56.999, то 1 мин = 0.63 км
         GHPoint startPoint = new GHPoint(latitude, longitude - trackLength / (2 * METERS_TO_DEGREES));
         GHPoint finishPoint = new GHPoint(latitude, longitude + trackLength / (2 * METERS_TO_DEGREES));
+//        GHPoint startPoint = new GHPoint(latitude - trackLength / (2 * METERS_TO_DEGREES), longitude + trackLength / (2 * METERS_TO_DEGREES));
+//        GHPoint finishPoint = new GHPoint(latitude + trackLength / (2 * METERS_TO_DEGREES), longitude - trackLength / (2 * METERS_TO_DEGREES));
         //это дело скорее всего надо будет переделать перед построением визуала. Надо будет брать круг или квадрат координат, брать случайные
         //точки и строить трек. Если трек малой - брать конечную точку, брать снова случайную точку еще и строить еще трек, слепить их и далее
 
