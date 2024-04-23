@@ -60,19 +60,19 @@
 
             <div class="mb-3">
                 <label for="brand"><b>Марка</b></label>
-                <select class="form-control" id="brand" name="brandId">
+                <select class="form-select" id="brand" name="brandId">
                     <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand}" th:field="*{brandId}" th:selected="${brand.id==brandId}"></option>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="enterprise"><b>Предприятие</b></label>
-                <select class="form-control" id="enterprise" name="enterpriseId">
+                <select class="form-select" id="enterprise" name="enterpriseId">
                     <option th:each="enterprise : ${enterprises}" th:value="${enterprise.id}" th:text="${enterprise.name}" th:field="*{enterpriseId}" th:selected="${enterprise.id==enterpriseId}"></option>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="drivers"><b>Активный водитель</b></label>
-                <select class="form-control" id="drivers" name="activeDriverId">
+                <select class="form-select" id="drivers" name="activeDriverId">
                     <option th:each="driver : ${drivers}" th:value="${driver.id}" th:text="${driver.name}" th:field="*{activeDriverId}" th:selected="${driver.id==activeDriverId}"></option>
                 </select>
             </div>

@@ -89,7 +89,7 @@ public class VehicleController {
 
     @GetMapping("/vehicle/{id}")
     public String getById(Model model, @PathVariable int id, @RequestParam("enterpriseId") int enterpriseId,
-                          @RequestParam("enterpriseName") String enterpriseName, Principal principal, HttpServletRequest request) {
+                          @RequestParam("enterpriseName") String enterpriseName, Principal principal) {
         //getReffered?
         var vehicleDTOZonedDTOptional = vehicleService.findVehicleDTOWithZonedDateTimeById(id);
         if (vehicleDTOZonedDTOptional.isEmpty()) {

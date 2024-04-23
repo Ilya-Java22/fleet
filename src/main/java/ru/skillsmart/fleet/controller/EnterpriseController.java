@@ -7,14 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.skillsmart.fleet.dto.EnterpriseDTO;
 import ru.skillsmart.fleet.model.Enterprise;
-import ru.skillsmart.fleet.model.User;
-import ru.skillsmart.fleet.model.Vehicle;
 import ru.skillsmart.fleet.service.*;
 
 import java.security.Principal;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 public class EnterpriseController {
@@ -22,11 +18,13 @@ public class EnterpriseController {
     private final VehicleService vehicleService;
     private final EnterpriseService enterpriseService;
     private final UserService userService;
+    private final ReportEngine reportEngine;
 
-    public EnterpriseController(VehicleService vehicleService, EnterpriseService enterpriseService, UserService userService) {
+    public EnterpriseController(VehicleService vehicleService, EnterpriseService enterpriseService, UserService userService, ReportEngine reportEngine) {
         this.vehicleService = vehicleService;
         this.enterpriseService = enterpriseService;
         this.userService = userService;
+        this.reportEngine = reportEngine;
     }
 
 //    @GetMapping(path = "/1", produces = "application/json")
@@ -42,7 +40,8 @@ public class EnterpriseController {
 //            return "errors/404";
 //        }
 //        model.addAttribute("brands", brandService.findAll());
-//        model.addAttribute("vehicle", vehicleOptional.get());
+        model.addAttribute("reports", reportEngine.getAllReportsNames());
+        model.addAttribute("reportPeriodUnits", ReportEngine.getAvailablePeriodUnits());
         model.addAttribute("enterpriseName", enterpriseName);
         model.addAttribute("enterpriseId", id);
         return "enterprises/one";

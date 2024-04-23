@@ -9,6 +9,7 @@ import ru.skillsmart.fleet.model.Enterprise;
 import ru.skillsmart.fleet.repository.EnterpriseRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SimpleEnterpriseService implements EnterpriseService {
@@ -85,10 +86,14 @@ public class SimpleEnterpriseService implements EnterpriseService {
     public boolean checkUserAccessToEnterprise(String username, Integer... enterpriseIds) {
         Set<Enterprise> userEnterprisesSet = userService.findUserWithEnterprisesByUsername(username).getEnterprises();
         Set<Integer> enterpriseIdSet = new HashSet<>(Arrays.asList(enterpriseIds));
-        return userEnterprisesSet.stream()
+//        return userEnterprisesSet.stream()
+//                .map(Enterprise::getId)
+//                .anyMatch(enterpriseIdSet::contains);
+//        было как выше, но теперь думаю, надо так
+        Set<Integer> userEnterprisesIdSet = userEnterprisesSet.stream()
                 .map(Enterprise::getId)
-                .anyMatch(enterpriseIdSet::contains);
-        // ИЛИ ALLMATCH!!!!!?????
+                .collect(Collectors.toSet());
+        return userEnterprisesIdSet.containsAll(enterpriseIdSet);
     }
 
     @Override

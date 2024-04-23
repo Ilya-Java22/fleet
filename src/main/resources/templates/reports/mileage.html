@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <!--  Зависимости Bootstrap-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/code.jquery.com_jquery-3.7.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <title>Отчет по пробегу автомобиля</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+    <header th:insert="~{blocks/header :: header}"></header>
+    <div class="container">
+        <h3>Отчет по пробегу автомобиля</h3>
+        <div class="row">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Период</th>
+                    <th scope="col">Пробег, м</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="entry : ${report}">
+                    <td th:text="${entry.key}"></td>
+                    <td th:text="${entry.value}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-6"><a class="btn btn-danger w-100" th:href="${#httpServletRequest.getHeader('Referer')}">Назад</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -20,7 +20,7 @@
             <input type="hidden" name="enterpriseId" th:value="${enterpriseId}">
             <div class="mb-3">
                 <label for="brandId"><b>Выберите модель</b></label>
-                <select class="form-control" id="brandId" name="brandId">
+                <select class="form-select" id="brandId" name="brandId">
                     <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand}"></option>
                 </select>
             </div>

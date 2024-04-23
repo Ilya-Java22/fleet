@@ -2,7 +2,6 @@ package ru.skillsmart.fleet.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.skillsmart.fleet.model.TrackPoint;
 import ru.skillsmart.fleet.model.Trip;
 
 import java.time.LocalDateTime;
@@ -15,8 +14,21 @@ public interface TripRepository extends JpaRepository<Trip, Integer> {
 //            "WHERE t.vehicle.id = :vehicleId " +
 //            "AND t.startTime >= :startDate AND t.finishTime <= :endDate")
     //HQL
+    //выдает поездки, которые только полностью попали в диапазон времени
     @Query("SELECT DISTINCT t FROM Trip t LEFT JOIN FETCH t.trackPoints tp "
             + "WHERE t.vehicle.id = :vehicleId "
             + "AND t.startTime >= :startDate AND t.finishTime <= :endDate")
-    List<Trip> findByVehicleIdAndTimeBetween(Integer vehicleId, LocalDateTime startDate, LocalDateTime endDate);
+    List<Trip> findTripsWithTrackpointsByVehicleIdAndTimeBetween(Integer vehicleId, LocalDateTime startDate, LocalDateTime endDate);
+
+    //выдает поездки, которые только полностью попали в диапазон времени
+    @Query("SELECT DISTINCT t FROM Trip t "
+            + "WHERE t.vehicle.id = :vehicleId "
+            + "AND t.startTime >= :startDate AND t.finishTime <= :endDate")
+    List<Trip> findTripsByVehicleIdAndTimeBetween(Integer vehicleId, LocalDateTime startDate, LocalDateTime endDate);
+
+    //выдает поездки, в том числе которые частично попали в диапазон времени
+    @Query("SELECT DISTINCT t FROM Trip t "
+            + "WHERE t.vehicle.id = :vehicleId "
+            + "AND t.finishTime > :startDate AND t.startTime < :endDate")
+    List<Trip> findAllTripsByVehicleIdAndTimeBetween(Integer vehicleId, LocalDateTime startDate, LocalDateTime endDate);
 }

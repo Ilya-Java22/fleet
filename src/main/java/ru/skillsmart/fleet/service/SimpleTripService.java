@@ -38,7 +38,7 @@ public class SimpleTripService implements TripService {
 
     @Override
     public List<TrackPointDTO> getTripsPointsByVehicleAndDateRange(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Trip> trips = tripRepository.findByVehicleIdAndTimeBetween(vehicle.getId(), startDate, endDate);
+        List<Trip> trips = tripRepository.findTripsWithTrackpointsByVehicleIdAndTimeBetween(vehicle.getId(), startDate, endDate);
 
         if (trips.isEmpty()) {
             return new ArrayList<>();
@@ -104,7 +104,7 @@ public class SimpleTripService implements TripService {
 
     @Override
     public List<TripDTO> getTripsByVehicleAndDateRange(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Trip> trips = tripRepository.findByVehicleIdAndTimeBetween(vehicle.getId(), startDate, endDate);
+        List<Trip> trips = tripRepository.findTripsByVehicleIdAndTimeBetween(vehicle.getId(), startDate, endDate);
 
         if (trips.isEmpty()) {
             return new ArrayList<>();

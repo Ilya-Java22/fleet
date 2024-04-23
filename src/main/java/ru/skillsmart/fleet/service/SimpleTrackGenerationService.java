@@ -220,7 +220,7 @@ public class SimpleTrackGenerationService implements TrackGenerationService {
     private String pointToAddress(Point point) {
 //                GHGeocodingRequest request = new GHGeocodingRequest(pl.getLat(i), pl.getLon(i), "en", 1);
             GHGeocodingRequest request = new GHGeocodingRequest(true, new GHPoint(point.getX(), point.getY()),
-                    null, "ru", 1, "opencagedata", -1L);
+                    null, "ru", 1, "opencage", -1L);
 
             GHGeocodingResponse response = geocoding.geocode(request);
 
