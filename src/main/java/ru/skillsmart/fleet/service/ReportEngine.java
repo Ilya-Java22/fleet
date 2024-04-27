@@ -1,12 +1,17 @@
 package ru.skillsmart.fleet.service;
 
+import ru.skillsmart.fleet.dto.TrackPointDTO;
 import ru.skillsmart.fleet.exception.ReportPeriodUnitException;
+import ru.skillsmart.fleet.model.Report;
+import ru.skillsmart.fleet.model.Vehicle;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public interface ReportEngine {
@@ -48,46 +53,8 @@ public interface ReportEngine {
     }
 
     List<String> getAllReportsNames();
-    Map<String, Double> generateReport(int vehicleId, String reportName, LocalDate startDate, LocalDate endDate, String reportPeriodUnit);
-
-//    static final Map<String, ReportService> REPORT_SERVICES = new HashMap<>();
-//
-//    static {
-//        REPORT_SERVICES.put("mileageReport", MileageReportService mileageReportService);
-//    }
-//
-//
-//
-//    private final Map<String, ReportService> reportServices;
-//
-//    @Autowired
-//    public ReportService(List<ReportService> reportServiceList) {
-//        this.reportServices = reportServiceList.stream()
-//                .collect(Collectors.toMap(service -> service.getClass().getSimpleName(),
-//                        Function.identity()));
-//    }
-
-
-
-
-//    private static final Map<String, ReportService> REPORT_SERVICES = new HashMap<>();
-//
-//    @Autowired
-//    private MileageReportService mileageReportService;
-//
-//    @PostConstruct
-//    public void initReportServices() {
-//        REPORT_SERVICES.put("mileageReport", mileageReportService);
-//    }
-
-
-
-//
-//
-//    public  Map<String, String> getReport(int vehicleId, String reportName) {
-//        return REPORT_SERVICES.get(reportName).generateReport(vehicleId);
-//    }
-//
-//    public abstract Map<String, String> generateReport(int vehicleId);
+    Optional<Report> findById(int id);
+    Optional<Report> createReport(Report report);
+    List<Report> getSpecificReportsForVehicle(Integer vehicleId, LocalDate startDate, LocalDate endDate, String reportName, String reportPeriodUnit);
 
 }

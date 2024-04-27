@@ -2,27 +2,29 @@ package ru.skillsmart.fleet.service;
 
 import org.springframework.stereotype.Service;
 
+import ru.skillsmart.fleet.model.Report;
 import ru.skillsmart.fleet.model.Trip;
+import ru.skillsmart.fleet.model.Vehicle;
+import ru.skillsmart.fleet.repository.ReportRepository;
 import ru.skillsmart.fleet.repository.TripRepository;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-
-import static java.time.temporal.ChronoUnit.YEARS;
+import java.util.Optional;
 
 //выдает отчет в виде таблицы "период-пробег"
 @Service
 public class MileageReportService implements ReportService {
 
-    public static final String NAME = "Отчет по пробегу автомобиля";
-    public static final String VIEW = "reports/mileage";
+    private static final String NAME = "Отчет по пробегу автомобиля";
+    private static final String VIEW = "reports/mileage";
+    private final ReportRepository reportRepository;
+    private final TripRepository tripRepository;
 
     @Override
     public String getName() {
@@ -34,14 +36,12 @@ public class MileageReportService implements ReportService {
         return VIEW;
     }
 
-    private final TripRepository tripRepository;
-
-    public MileageReportService(TripRepository tripRepository) {
+    public MileageReportService(ReportRepository reportRepository, TripRepository tripRepository) {
+        this.reportRepository = reportRepository;
         this.tripRepository = tripRepository;
     }
 
-    @Override
-    public Map<String, Double> generateReport(int vehicleId, LocalDate startDate, LocalDate endDate, TemporalUnit periodUnit) {
+    private Map<String, Double> generateReport(int vehicleId, LocalDate startDate, LocalDate endDate, TemporalUnit periodUnit) {
         Map<String, Double> mileagePerPeriod = new LinkedHashMap<>();
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
@@ -66,6 +66,13 @@ public class MileageReportService implements ReportService {
         }
 
         return mileagePerPeriod;
+    }
+    @Override
+    public Optional<Report> createReport(Report report, TemporalUnit periodUnit) {
+        Map<String, Double> results = generateReport(report.getVehicleId(), report.getStartDate(), report.getEndDate(), periodUnit);
+        report.setResults(results);
+        Report savedReport = reportRepository.save(report);
+        return savedReport.getId() != 0 ? Optional.of(savedReport) : Optional.empty();
     }
 
     //все юниты перечислены в интерфейсе ReportEngine

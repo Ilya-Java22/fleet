@@ -85,12 +85,12 @@
 
         </div>
 
-        <form class="mt-3" th:action="@{/report}" method="get" enctype="multipart/form-data">
+        <form class="mt-3" th:action="@{/report/create}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="enterpriseId" th:value="${enterpriseId}">
 
         <div class="mb-3">
             <p><b>3. Сформировать отчет по машине</b></p>
-            <p id="error-message" style="display: none; color: red;">Пожалуйста, заполните все обязательные поля.</p>
+<!--            <p id="error-message" style="display: none; color: red;">Пожалуйста, заполните все обязательные поля.</p>-->
             <p style="padding-left: 20px;"><i>введите id машины</i></p>
             <div style="padding-left: 20px; margin-bottom: 14px;" >
                 <input type="number" class="form-control" id="vehicle_Id" name="vehicle_Id" style="width: 150px;" placeholder="id автомобиля" required>
@@ -98,9 +98,9 @@
             <p style="padding-left: 20px;"><i>выберите тип отчета</i></p>
             <div style="padding-left: 20px; margin-bottom: 14px;" >
 <!--                <input type="number" class="form-control" id="vehicleId" name="vehicleId" style="width: 150px;" placeholder="id автомобиля" >-->
-                <select class="form-select" id="report" name="report" style="width: 300px;" required>
+                <select class="form-select" id="reportName" name="reportName" style="width: 300px;" required>
                     <option value=""></option>
-                    <option th:each="report : ${reports}" th:value="${report}" th:text="${report}"></option>
+                    <option th:each="reportName : ${reports}" th:value="${reportName}" th:text="${reportName}"></option>
                 </select>
             </div>
             <p style="padding-left: 20px;"><i>выберите начальную дату</i></p>

@@ -30,6 +30,7 @@ import ru.skillsmart.fleet.repository.VehicleRepository;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class SimpleTrackGenerationService implements TrackGenerationService {
@@ -226,7 +227,13 @@ public class SimpleTrackGenerationService implements TrackGenerationService {
 
             if (response.getHits() != null && !response.getHits().isEmpty()) {
                     GHGeocodingEntry location = response.getHits().get(0);
-                return location.getName();
+//                    в name перестали писать весь адрес...
+//                return location.getName();
+                List<String> addressDetails = Arrays.asList(location.getName(), location.getStreet(), location.getHouseNumber(), location.getCity(), location.getPostcode());
+                String result = addressDetails.stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.joining(", "));
+                return result;
             } else {
                     return "Адрес не найден для данных координат";
             }

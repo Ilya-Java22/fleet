@@ -1,15 +1,17 @@
-<div th:fragment="header">
+<div th:fragment="header" th:with="currentUserRoles=${currentUserRoles}">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Автопарк</a>
-            <div class="collapse navbar-collapse">
-                <div class="navbar-nav me-auto">
-<!--                    <a class="nav-item nav-link active" href="/">Главная</a>-->
-<!--                    <a class="nav-item nav-link" th:href="@{/vehicles}">Машины</a>-->
-<!--                    <a class="nav-item nav-link" th:href="@{/brands}">Модели машин</a>-->
-<!--                    <a class="nav-item nav-link active" th:href="@{/vehicles/create}">Зарегистрировать машину</a>-->
+            <a class="navbar-brand" href="/" style="font-size: 30px; font-weight: bold;">Автопарк</a>
+                <div class="collapse navbar-collapse">
+                    <div class="navbar-nav ml-auto">
+                        <a class="nav-item nav-link active" href="/reports" th:if="${#lists.contains(currentUserRoles, 'ADMIN')
+                        or #lists.contains(currentUserRoles, 'MANAGER')}" style="font-size: 20px; font-weight: bold;">Отчеты</a>
+    <!--                    <a class="nav-item nav-link active" href="/">Главная</a>-->
+    <!--                    <a class="nav-item nav-link" th:href="@{/vehicles}">Машины</a>-->
+    <!--                    <a class="nav-item nav-link" th:href="@{/brands}">Модели машин</a>-->
+    <!--                    <a class="nav-item nav-link active" th:href="@{/vehicles/create}">Зарегистрировать машину</a>-->
+                    </div>
                 </div>
-            </div>
         </div>
     </nav>
 </div>

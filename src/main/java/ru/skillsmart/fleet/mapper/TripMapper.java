@@ -21,9 +21,6 @@ import java.util.concurrent.TimeUnit;
 @Mapper(componentModel = "spring")
 public abstract class TripMapper {
 
-        @Value("${graphhopper.api.key}")
-        String graphHopperApiKey;
-
         @Mapping(target = "tripId", source = "id")
         @Mapping(target = "startLat", source = "startPoint", qualifiedByName = "pointToLat")
         @Mapping(target = "startLon", source = "startPoint", qualifiedByName = "pointToLon")
