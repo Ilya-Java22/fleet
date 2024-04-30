@@ -219,6 +219,7 @@ public class VehicleController {
     //до введения понятия Trip был такой запрос: @GetMapping("/api/vehicle/{vehicleId}/trackPoints")
     //    public ResponseEntity<Object> getTrackPointsForVehicleInDateRange
     //метод выдает единый список точек трипов, попавших целиком в указанный диапазон времени
+    //по сути нигде не использовал, просто задание; треки на карте рисую всё равно по отдельности, не одним большим супертреком
     @GetMapping("/api/vehicle/{vehicleId}/trips-points")
     public ResponseEntity<Object> getTripsPointsForVehicleInDateRange(@PathVariable Integer vehicleId,
                                                                       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -252,6 +253,9 @@ public class VehicleController {
         }
     }
 
+    //метод выдает массив треков, каждый трек представляет собой массив точек
+    //получает на вход набор trp.id, получаемый выделением поездок на сайте
+    //используется в javascript в vehicles/one.html для последующего построения треков на карте
     @PostMapping("/api/vehicle/{vehicleId}/separate-trips-points")
     public ResponseEntity<Object> getSeparateTripsPointsForVehicleInDateRange(@PathVariable Integer vehicleId,
                                                                               @RequestBody Map<String, List<Integer>> selectedTrips,
@@ -276,7 +280,8 @@ public class VehicleController {
         return new ResponseEntity<>(tripsPoints, HttpStatus.OK);
     }
 
-    //метод выдает единый список точек трипов, попавших целиком в указанный диапазон времени
+    //метод выдает список поездок, целиком попавших в диапазон
+    //используется в javascript в vehicles/one.html для отображения списка поездок по запросу
     @GetMapping("/api/vehicle/{vehicleId}/trips")
     public ResponseEntity<Object> getTripsForVehicleInDateRange(@PathVariable Integer vehicleId,
                                                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,

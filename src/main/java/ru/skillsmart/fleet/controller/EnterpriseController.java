@@ -55,6 +55,7 @@ public class EnterpriseController {
     }
 
     //при большом кол-ве машин и водителей надо бы переделать на пагинацию либо убрать поля из dto
+    //более "приличные" rest с возвратом разных статусов в рамках ResponseEntity<Object> - см внизу VehicleController
     @ResponseBody
     @GetMapping(path = "/api/enterprise", produces = "application/json")
     public List<EnterpriseDTO> getEnterprisesForManager(Principal principal) {

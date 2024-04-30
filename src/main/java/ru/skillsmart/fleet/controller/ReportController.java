@@ -119,6 +119,7 @@ public class ReportController {
         return "reports/list";
     }
 
+    //используется в javascript на странице машины для выдачи отчетов
     @GetMapping("/api/reports")
     public ResponseEntity<Object> getSpecificReportsForVehicle(@RequestParam(name = "vehicleId") Integer vehicleId,
                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
