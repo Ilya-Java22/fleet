@@ -15,6 +15,8 @@ public class SimpleReportEngine implements ReportEngine {
     private final Map<String, ReportService> reports = new HashMap<>();
     private final ReportRepository reportRepository;
 
+    //есть еще альтернатива, см. https://sysout.ru/nasledovanie-sushhnostej-s-pomoshhyu-joined-table-primer-na-hibernate-i-spring-boot/
+    //или в экселе вкладка Полезное "расчет скидок"
     public SimpleReportEngine(Map<String, ReportService> reports, ReportRepository reportRepository) {
         this.reportRepository = reportRepository;
         reports.values().forEach(reportService -> this.reports.put(reportService.getName(), reportService));
